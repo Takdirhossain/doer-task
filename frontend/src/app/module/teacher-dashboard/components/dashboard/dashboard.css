@@ -1,0 +1,64 @@
+.cards-container {
+  display: flex;                  
+  flex-wrap: nowrap;              
+  gap: 16px;
+  padding: 0;                      
+  margin: 0;                       
+  overflow-x: auto; 
+          
+}
+.card {
+  flex: 1;
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.total-card {
+  border-color: #e2e8f0;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.present-card {
+  border-color: #dcfce7;
+  background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+}
+
+.absent-card {
+  border-color: #fee2e2;
+  background: linear-gradient(135deg, #fef2f2 0%, #fef3c7 100%);
+}
+
+.number {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  line-height: 1;
+}
+
+.total-card .number {
+  color: #475569;
+}
+.present-card .number {
+  color: #166534;
+}
+.absent-card .number {
+  color: #dc2626;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}

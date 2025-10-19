@@ -1,0 +1,42 @@
+.sidebar{
+    width: 250px;
+    background-color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+    border-radius: 7px;
+    
+    min-height: 90vh;
+}
+.sidebar-use-image{
+    width: 60px;
+}
+.sidebar-top{
+    background-image: url('assets/waves.png');
+    background-position: top;
+    background-size: cover;
+}
+.sidebar-container{
+  padding-top: 30px;
+  padding-left: 30px;
+    
+}
+.sidebar-content{
+    margin-top: 50px;
+    padding-left: 20px;
+}
+.active{
+   color: var(--primary-color);
+}
+.user-name{
+    margin-bottom: 0px;
+    padding-bottom: 0px;
+}
+.user-role{
+    margin-top: 0;
+    padding-top: 0;
+    font-size: 12px ;
+    text-align: center;
+    color: #666;
+}
+.view-profile{
+    color: var(--primary-color);
+}

@@ -1,0 +1,23 @@
+<div>
+  <div>
+    <h2>Student Dashboard</h2>
+  </div>
+  <div>
+    <div class="cards-container mt-4">
+        <div class="card total-card">
+            <div class="number" id="totalStudents">{{dashboard.totalWorkingDays}}</div>
+            <div class="label">Total Worked</div>
+        </div>
+
+        <div class="card present-card">
+            <div class="number" id="presentStudents">{{dashboard.totalPresent}}</div>
+            <div class="label">Present</div>
+        </div>
+
+        <div class="card absent-card">
+            <div class="number" id="absentStudents">{{dashboard.totalAbsent}}</div>
+            <div class="label">Absent</div>
+        </div>
+    </div>
+  </div>
+</div>

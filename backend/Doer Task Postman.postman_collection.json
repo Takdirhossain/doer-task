@@ -1,0 +1,640 @@
+{
+	"info": {
+		"_postman_id": "4b8da998-d614-432e-97d0-adcca1ec676c",
+		"name": "Doer Task Postman",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "25048330",
+		"_collection_link": "https://truck0.postman.co/workspace/My-Workspace~d84b3a4b-400e-4775-8323-f5d98f2d83f6/collection/25048330-4b8da998-d614-432e-97d0-adcca1ec676c?action=share&source=collection_link&creator=25048330"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": \"123456\",\n    \"username\": \"takdir\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}/api/v1/auth/login",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Signup",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"testteacher\",\r\n    \"email\": \"testteacher@gmail.com\",\r\n    \"mobile\": \"12345678905\",\r\n    \"password\" : \"123456\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}/api/v1/auth/signup",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"testteacher\",\r\n    \"email\": \"testteacher@gmail.com\",\r\n    \"mobile\": \"12345678905\",\r\n    \"password\" : \"123456\"\r\n}"
+						},
+						"url": {
+							"raw": "{{local}}/api/v1/auth/logout",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Logs",
+			"item": [
+				{
+					"name": "Get-log",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dmcnpiZzAwMDB2cDYwNml6cTRmY3UiLCJpYXQiOjE3NjA4ODQ3MDgsImV4cCI6MTc2MDg4ODMwOH0.qOJAI8dZ4paW8G_jfyFuwbuU0PyWFdc9tQ_MGCO1bco",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": \"123456\",\n    \"username\": \"takdir\"\n}"
+						},
+						"url": {
+							"raw": "{{local}}/api/v1/logs/get-logs",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"logs",
+								"get-logs"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dmcnpiZzAwMDB2cDYwNml6cTRmY3UiLCJpYXQiOjE3NjA4ODQ3MDgsImV4cCI6MTc2MDg4ODMwOH0.qOJAI8dZ4paW8G_jfyFuwbuU0PyWFdc9tQ_MGCO1bco",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {},
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "teacher-student-management",
+			"item": [
+				{
+					"name": "process-csv",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dmcnpiZzAwMDB2cDYwNml6cTRmY3UiLCJpYXQiOjE3NjA4ODQ3MDgsImV4cCI6MTc2MDg4ODMwOH0.qOJAI8dZ4paW8G_jfyFuwbuU0PyWFdc9tQ_MGCO1bco",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/takdi/Downloads/students.csv"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{local}}/api/v1/students/process-csv",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"students",
+								"process-csv"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Save Student",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/api/v1/students/save-csv",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"students",
+								"save-csv"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "student-list",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dmcnpiZzAwMDB2cDYwNml6cTRmY3UiLCJpYXQiOjE3NjA4ODQ3MDgsImV4cCI6MTc2MDg4ODMwOH0.qOJAI8dZ4paW8G_jfyFuwbuU0PyWFdc9tQ_MGCO1bco",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/takdi/Downloads/students.csv"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{local}}/api/v1/students/student-list?page=1&limist=10&search=Tanvi",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"students",
+								"student-list"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limist",
+									"value": "10"
+								},
+								{
+									"key": "search",
+									"value": "Tanvi"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "student-profile",
+			"item": [
+				{
+					"name": "profile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dmcnpiZzAwMDB2cDYwNml6cTRmY3UiLCJpYXQiOjE3NjA4ODQ3MDgsImV4cCI6MTc2MDg4ODMwOH0.qOJAI8dZ4paW8G_jfyFuwbuU0PyWFdc9tQ_MGCO1bco",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/takdi/Downloads/students.csv"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{local}}/api/v1/students/cmgwp4f74002pvppks2lhat4k",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"students",
+								"cmgwp4f74002pvppks2lhat4k"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Profile update",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dmcnpiZzAwMDB2cDYwNml6cTRmY3UiLCJpYXQiOjE3NjA4ODQ3MDgsImV4cCI6MTc2MDg4ODMwOH0.qOJAI8dZ4paW8G_jfyFuwbuU0PyWFdc9tQ_MGCO1bco",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"firstName\": \"Tanvir\",\r\n    \"lastName\": \"Singh\",\r\n    \"email\": \"tanvi.singh@email.com\",\r\n    \"mobileNumber\": \"9876543308\",\r\n    \"address\": \"9696 Yelahanka, Bangalore\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}/api/v1/students/profile-update/cmgwp4f74002qvppkjpg6casi",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"students",
+								"profile-update",
+								"cmgwp4f74002qvppkjpg6casi"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "student present",
+			"item": [
+				{
+					"name": "Present",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dwNGY3NDAwMnF2cHBranBnNmNhc2kiLCJpYXQiOjE3NjA4ODU2MjMsImV4cCI6MTc2MDg4OTIyM30.XOQ8plBUnjZSADTbakGTLOUenjlI2QnIAKm3TeWYUNU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/takdi/Downloads/students.csv"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{local}}/api/v1/attendance/present",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"attendance",
+								"present"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Present stats",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dwNGY3NDAwMnF2cHBranBnNmNhc2kiLCJpYXQiOjE3NjA4ODU2MjMsImV4cCI6MTc2MDg4OTIyM30.XOQ8plBUnjZSADTbakGTLOUenjlI2QnIAKm3TeWYUNU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/takdi/Downloads/students.csv"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{local}}/api/v1/attendance/get-student-yearly-stats",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"attendance",
+								"get-student-yearly-stats"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Present-history",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dwNGY3NDAwMnF2cHBranBnNmNhc2kiLCJpYXQiOjE3NjA4ODU2MjMsImV4cCI6MTc2MDg4OTIyM30.XOQ8plBUnjZSADTbakGTLOUenjlI2QnIAKm3TeWYUNU",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/takdi/Downloads/students.csv"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{local}}/api/v1/attendance/get-present-history",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"attendance",
+								"get-present-history"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Teacher Attendence",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dmcnpiZzAwMDB2cDYwNml6cTRmY3UiLCJpYXQiOjE3NjA4ODQ3MDgsImV4cCI6MTc2MDg4ODMwOH0.qOJAI8dZ4paW8G_jfyFuwbuU0PyWFdc9tQ_MGCO1bco",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{local}}/api/v1/attendance/get-today-attendance?filter=present",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"attendance",
+								"get-today-attendance"
+							],
+							"query": [
+								{
+									"key": "filter",
+									"value": "present"
+								},
+								{
+									"key": "filter",
+									"value": "absent",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dwNGY3NDAwMnF2cHBranBnNmNhc2kiLCJpYXQiOjE3NjA4ODU2MjMsImV4cCI6MTc2MDg4OTIyM30.XOQ8plBUnjZSADTbakGTLOUenjlI2QnIAKm3TeWYUNU",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "local",
+			"value": ""
+		}
+	]
+}

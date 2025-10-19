@@ -1,0 +1,9 @@
+<div class="header bg-primary flex align-center flex-space-between">
+  <div class="pt-1 pb-1">
+    <h2 *ngIf="user.role == 'STUDENT'" class="pl-4">Student Dashboard</h2>
+    <h2 *ngIf="user.role == 'TEACHER'" class="pl-4">Teacher Dashboard</h2>
+  </div>
+  <div class="flex mr-5">
+    <button (click)="logOut()" class="btn btn-secondary">Logout</button>
+  </div>
+</div>

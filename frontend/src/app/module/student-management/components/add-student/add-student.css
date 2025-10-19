@@ -1,0 +1,9 @@
+.mdc-dialog__content {
+  overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.mdc-dialog__content::-webkit-scrollbar {
+  display: none;
+}

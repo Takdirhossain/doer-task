@@ -1,0 +1,36 @@
+<main>
+    <section>
+      <div class="wrap">
+        <form [formGroup]="loginForm" (ngSubmit)="submit()" autocomplete="off">
+          <h1 class="text-center">Login</h1>
+  
+  
+          <div class="input-box">
+            <label for="username">Username<span class="required">*</span></label><br>
+            <input type="text" name="username" placeholder="Username" class="w-100" autocomplete="new-username" formControlName="username">
+            <div *ngIf="loginForm.get('username')?.touched">
+                <div class="form-error" *ngIf="loginForm.get('username')?.hasError('required')">Username is Required</div>
+                <div class="form-error" *ngIf="loginForm.get('username')?.hasError('pattern')">Invalid username</div>
+            </div>
+          </div>
+  
+          <div class="input-box mt-3">
+            <label for="password">Password<span class="required">*</span></label>
+            <input type="password" name="password" placeholder="Password" class="w-100" autocomplete="new-password" formControlName="password">
+            <div *ngIf="loginForm.get('password')?.touched">
+                <div class="form-error" *ngIf="loginForm.get('password')?.hasError('required')">Password is Required</div>
+                <div class="form-error" *ngIf="loginForm.get('password')?.hasError('pattern')">Invalid password</div>
+            </div>
+          </div>
+          <span class="form-error mt-3" *ngIf="error">{{ error }}</span>
+  
+          <button type="submit" class="btn-primary mt-4 w-100 pt-2 pb-2 btn" [disabled]="loading">Login <app-button-loading *ngIf="loading"></app-button-loading></button>
+  
+          <div class="register">
+            <p>Don't have an account? <a  [routerLink]="['/auth/signup']">Register.</a></p>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+  
