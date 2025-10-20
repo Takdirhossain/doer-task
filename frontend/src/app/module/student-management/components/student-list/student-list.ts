@@ -1,19 +1,21 @@
-import { Component, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
-import { RouterLink } from '@angular/router';
-import { StudentManagementService } from '../../services/student-management-service';
-import { StudentListResponse, StudentList } from '../../models/student-list.model';
-import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { Pagination } from '@app/module/login-log/model/login-log.model';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
-import { AddStudent } from '../add-student/add-student';
+import { PageEvent } from '@angular/material/paginator';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
+
+import { StudentManagementService } from '../../services/student-management-service';
+import { StudentListResponse, StudentList } from '../../models/student-list.model';
+import { Pagination } from '@app/module/login-log/model/login-log.model';
+import { AddStudent } from '../add-student/add-student';
+import { DataTableComponent } from '@app/shared/components/data-table-component/data-table-component';
+import { TableConfig } from '@app/shared/model/common.model';
+import { EditStudent } from '../edit-student/edit-student';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-student-list',
@@ -22,21 +24,18 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
     CommonModule,
     FormsModule,
     MatIconModule,
-    RouterLink,
-    MatTableModule,
-    MatPaginatorModule,
-    MatProgressSpinnerModule,
     MatSelectModule,
     MatFormFieldModule,
-    MatDialogModule
+    MatDialogModule,
+    DataTableComponent
   ],
   templateUrl: './student-list.html',
-  styleUrl: './student-list.css'
+  styleUrls: ['./student-list.css']
 })
 export class StudentListComponent implements OnInit {
-  displayedColumns: string[] = ['rollNumber', 'name', 'username', 'class', 'mobileNumber', 'email', 'address'];
-  
-  dataSource = new MatTableDataSource<StudentList>([]);
+  students: StudentList[] = [];
+  loading = false;
+  searchTerm = '';
   
   pagination: Pagination = {
     total: 0,
@@ -44,15 +43,70 @@ export class StudentListComponent implements OnInit {
     limit: 10,
     totalPages: 0,
   };
-  searchTerm = '';
-  loading = false;
-  totalStudents = 0;
+
+  tableConfig: TableConfig = {
+    columns: [
+      {
+        key: 'rollNumber',
+        label: 'Roll No',
+        class: 'w-16 text-center'
+      },
+      {
+        key: 'name',
+        label: 'Name',
+        format: (value, row) => `${row.firstName} ${row.lastName}`
+      },
+      {
+        key: 'user.username',
+        label: 'Username'
+      },
+      {
+        key: 'class',
+        label: 'Class',
+        class: 'w-20'
+      },
+      {
+        key: 'user.mobileNumber',
+        label: 'Mobile',
+        class: 'w-32'
+      },
+      {
+        key: 'user.email',
+        label: 'Email',
+        class: 'w-40'
+      },
+      {
+        key: 'address',
+        label: 'Address',
+        class: 'max-w-xs truncate'
+      }
+    ],
+    actions: [
+      {
+        icon: 'edit',
+        tooltip: 'Edit Student',
+        color: 'primary',
+        callback: (row) => this.editStudent(row)
+      },
+      {
+        icon: 'delete',
+        tooltip: 'Delete Student',
+        color: 'warn',
+        callback: (row) => this.deleteStudent(row),
+        condition: (row) => row.status !== 'archived' 
+      }
+    ],
+    showActions: true
+  };
+
   private searchSubject = new Subject<string>();
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
-  constructor(private studentManagementService: StudentManagementService, private dialog: MatDialog) {}
+  constructor(
+    private studentManagementService: StudentManagementService,
+    private dialog: MatDialog
+  ) {}
 
-ngOnInit(): void {
+  ngOnInit(): void {
     this.getStudents(1, this.pagination.limit, '');
 
     this.searchSubject
@@ -65,7 +119,7 @@ ngOnInit(): void {
       });
   }
 
-  getStudents(page: number, limit: number, searchTerm?: string): void {
+  getStudents(page: number, limit: number, searchTerm: string = ''): void {
     this.loading = true;
     this.pagination.page = page;
     this.pagination.limit = limit;
@@ -74,8 +128,7 @@ ngOnInit(): void {
       next: (response: StudentListResponse) => {
         if (response.success) {
           const data = response.data;
-          this.dataSource.data = data.students;
-          this.totalStudents = data.total;
+          this.students = data.students;
           this.pagination.total = data.total;
           this.pagination.totalPages = data.pages;
           this.loading = false;
@@ -91,22 +144,24 @@ ngOnInit(): void {
   onPageSizeChange(pageSize: number): void {
     this.pagination.limit = pageSize;
     this.pagination.page = 1;
-    if (this.paginator) {
-      this.paginator.firstPage();
-    }
-    this.getStudents(1, pageSize);
+    this.getStudents(1, pageSize, this.searchTerm);
   }
 
-  onPageChange(event: PageEvent) {
-    const pageNumber = event.pageIndex + 1;
-    this.pagination.page = pageNumber;
-    this.pagination.limit = event.pageSize;
-    this.getStudents(pageNumber, event.pageSize);
+onPageChange(event: PageEvent): void {
+  console.log(event);
+  const pageNumber = event.pageIndex + 1;
+  this.pagination.page = pageNumber;
+  this.pagination.limit = event.pageSize;
+  this.getStudents(pageNumber, event.pageSize, this.searchTerm || '');
+}
+
+  onSearchChange(value: string): void {
+    this.searchSubject.next(value.trim());
   }
 
   openAddStudentDialog(): void {
     const dialogRef = this.dialog.open(AddStudent, {
-      width: '400px',
+      width: '600px',
       data: { title: 'Add Student' },
     });
 
@@ -116,7 +171,40 @@ ngOnInit(): void {
       }
     });
   }
-   onSearchChange(value: string): void {
-    this.searchSubject.next(value.trim());
+
+editStudent(student: StudentList): void {
+  const dialogRef = this.dialog.open(EditStudent, {
+    width: '600px',
+  });
+
+  // Manually set input
+  dialogRef.componentInstance.studentData = student;
+
+  dialogRef.afterClosed().subscribe((result) => {
+    if (result) {
+      this.getStudents(1, this.pagination.limit);
+    }
+  });
+}
+
+  deleteStudent(student: StudentList): void {
+    console.log('Delete student:', student);
+   Swal.fire({
+    title: 'Are you sure?',
+    text: `You Want to delete ${student.firstName} ${student.lastName}?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      Swal.fire(
+        'Deleted!',
+        `${student.firstName} ${student.lastName} has been deleted.`,
+        'success'
+      );
+    }
+  });
   }
 }

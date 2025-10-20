@@ -87,6 +87,7 @@ a {
     justify-content: center;
     align-items: center;
 }
+.flex-1{flex: 1;}
 
 .flex-space-between { justify-content: space-between; }
 .flex-space-around { justify-content: space-around; }
