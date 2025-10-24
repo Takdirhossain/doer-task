@@ -47,7 +47,7 @@ exports.registerUser = async (data) => {
       if(user.status === "INACTIVE") throw new AppError('You are inactive', 401);
       
      
-      const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '5d' });
+      const token = jwt.sign({ id: user.id, role: user.role, username: user.username }, process.env.JWT_SECRET, { expiresIn: '5d' });
       let userData = hideFields(user, ['passwordHash']);
       createLog({ipAddress, userAgent, userId: user.id, actionType: 'login', status: 'success', message: 'User logged in successfully'});
       createLogger({

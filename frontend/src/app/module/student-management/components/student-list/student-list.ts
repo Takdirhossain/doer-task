@@ -177,7 +177,6 @@ editStudent(student: StudentList): void {
     width: '600px',
   });
 
-  // Manually set input
   dialogRef.componentInstance.studentData = student;
 
   dialogRef.afterClosed().subscribe((result) => {
@@ -199,11 +198,26 @@ editStudent(student: StudentList): void {
     confirmButtonText: 'Yes, delete it!'
   }).then((result) => {
     if (result.isConfirmed) {
-      Swal.fire(
-        'Deleted!',
-        `${student.firstName} ${student.lastName} has been deleted.`,
-        'success'
-      );
+      this.studentManagementService.deleteStudent(student?.userId).subscribe({
+        next: (response: any) => {
+          if (response.success) {
+            this.getStudents(1, this.pagination.limit);
+            Swal.fire(
+              'Deleted!',
+              `${student.firstName} ${student.lastName} has been deleted.`,
+              'success'
+            );
+          }
+        },
+        error: (error) => {
+          Swal.fire(
+            'Error!',
+            error.error.message,
+            'error'
+          );
+        }
+      });
+
     }
   });
   }

@@ -22,6 +22,7 @@ import { ButtonLoading } from '@app/shared/components/button-loading/button-load
 import { StudentManagementService } from '../../services/student-management-service';
 import { SignUpValidationPatterns } from '@app/shared/validation/validation';
 import { MatIcon } from '@angular/material/icon';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-add-student',
@@ -69,7 +70,7 @@ export class AddStudent implements OnInit {
         Validators.minLength(3),
         Validators.maxLength(20),
       ]),
-      password: new FormControl('', [
+      password_hash: new FormControl('', [
         Validators.required,
         Validators.minLength(6),
         Validators.maxLength(20),
@@ -78,15 +79,29 @@ export class AddStudent implements OnInit {
         Validators.required,
         Validators.pattern(SignUpValidationPatterns.email),
       ]),
-      mobile: new FormControl('', [
+      mobileNumber: new FormControl('', [
         Validators.required,
         Validators.pattern(SignUpValidationPatterns.mobile),
         Validators.minLength(11),
         Validators.maxLength(11),
       ]),
+      class: new FormControl('', [Validators.required, Validators.min(1), Validators.max(12)]),
+      dateOfBirth: new FormControl('', [Validators.required]),
     });
   }
-
+  minimumAgeValidator(minAge: number) {
+    return (control: FormControl) => {
+      const dob = new Date(control.value);
+      if (isNaN(dob.getTime())) return null;
+  
+      const today = new Date();
+      const age = today.getFullYear() - dob.getFullYear();
+      const m = today.getMonth() - dob.getMonth();
+  
+      const isTooYoung = age < minAge || (age === minAge && m < 0);
+      return isTooYoung ? { minAge: true } : null;
+    };
+  }
   get fc() {
     return this.addStudentForm.controls;
   }
@@ -103,12 +118,24 @@ export class AddStudent implements OnInit {
       this.addStudentService.addStudent(this.addStudentForm.value).subscribe({
         next: (response: any) => {
           if (response.success) {
-            // this.dialogRef.close({ success: true, data: this.addStudentForm.value });
+            Swal.fire({
+              icon: 'success',
+              title: 'Student added successfully',
+              showConfirmButton: false,
+              timer: 1500,
+            });
+            this.dialogRef.close({ success: true, data: this.addStudentForm.value });
           }
         },
         error: (error) => {
-          console.error('Error adding student:', error);
-          this.error = 'Failed to add student.';
+          console.error('Error adding student:', error?.error?.message);
+          Swal.fire({
+            icon: 'error',
+            title: error?.error?.message,
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          this.error = error?.error?.message;
         },
       });
     }

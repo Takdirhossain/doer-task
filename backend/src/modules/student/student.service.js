@@ -1,4 +1,6 @@
 const { prisma } = require("../../config/database");
+const AppError = require("../../utils/AppError");
+const { createLogger } = require("../logs/log.service");
 const { studentSchema } = require("./student.validation");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
@@ -116,7 +118,56 @@ exports.create = async (req) => {
 
   return uniqueUsers;
 };
+exports.createStudent = async(data, teacherId, username) => {
+ try {
+   const createStudent =  await prisma.$transaction(async (prismaTx) => {
+    const user = await prismaTx.user.create({
+      data: {
+        username: data.username,
+        email: data.email,
+        mobileNumber: data.mobileNumber,
+        role: "STUDENT",
+        passwordHash: bcrypt.hashSync(data.password_hash, 10),
+      },
+    })
+    const student = await prismaTx.student.create({
+      data: {
+        userId: user.id,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        class: data.class,
+        dateOfBirth: data.dateOfBirth,
+        rollNumber: data.rollNumber,
+        address: data.address,
+        teacherId: teacherId,
+      },
+    })
 
+    try {
+      await createLogger({
+        userId: teacherId,
+        userName: username,
+        level: 'INFO',
+        category: 'Add Student',
+        action: 'Add Student',
+        message: 'Student created successfully',
+        meta: { body: data }
+      });
+    } catch (logErr) {
+      console.log(logErr)
+      throw new AppError('Something went wrong during student creation', 500);
+    }
+
+    return {user, student};
+  });
+ } catch (error) {
+  if (error.code && error.code.startsWith('P')) {
+    throw error; 
+  }
+  console.log(error)
+  throw new AppError(error.message, 500);
+ }
+}
 exports.list = async ({ page = 1, limit = 10, search = "", teacherId }) => {
   const skip = (page - 1) * limit;
 
@@ -194,16 +245,96 @@ exports.update = async (id, data) => {
   return { user: updatedUser, student: updatedStudent };
 };
 
-exports.remove = async (id) => {
-  const student = await prisma.student.findUnique({
-    where: { id: Number(id) },
+exports.remove = async (id, userId, username) => {
+  console.log(id, userId, username);
+  const user = await prisma.user.findFirst({
+    where: { id: id },
+  });
+  if (!user) throw new Error("User not found");
+
+  const student = await prisma.student.findFirst({
+    where: { userId: id },
   });
   if (!student) throw new Error("Student not found");
+  if (student.teacherId !== userId) throw new Error("You are not authorized to delete this student");
 
   await prisma.$transaction([
-    prisma.student.delete({ where: { id: Number(id) } }),
-    prisma.user.delete({ where: { id: student.userId } }),
+    prisma.student.delete({ where: { userId: id } }),
+    prisma.user.delete({ where: { id } }),
   ]);
 
+  try {
+    await createLogger({
+      userId: userId,
+      userName: username,
+      level: 'INFO',
+      category: 'Delete Student',
+      action: 'Delete Student',
+      message: 'Student deleted successfully',
+      meta: { body: { id } }
+    });
+  } catch (logErr) {
+    console.log(logErr)
+    throw new AppError('Something went wrong during student deletion', 500);
+  }
+
   return true;
+};
+
+exports.updateStudent = async (data, teacherId, studentId) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: studentId },
+    });
+    if (!user) throw new AppError("User not found", 404);
+
+    const student = await prisma.student.findUnique({
+      where: { userId: user.id },
+    });
+    if (!student) throw new AppError("Student not found", 404);
+    if (student.teacherId !== teacherId) throw new AppError("You are not authorized to update this student", 401);
+
+    if (data.class !== undefined && data.rollNumber !== undefined) {
+      const existing = await prisma.student.findFirst({
+        where: {
+          teacherId: teacherId,
+          class: data.class,
+          rollNumber: data.rollNumber,
+          userId: { not: user.id }, 
+        },
+      });
+      if (existing) {
+        throw new AppError(
+          `Roll number ${data.rollNumber} is already assigned in class ${data.class}`,
+          400
+        );
+      }
+    }
+
+    const [updatedUser, updatedStudent] = await prisma.$transaction([
+      prisma.user.update({
+        where: { id: user.id },
+        data: {
+          email: data.email ?? user.email,
+          mobileNumber: data.mobileNumber ?? user.mobileNumber,
+          status: data.status ? "ACTIVE" : "INACTIVE",
+        },
+      }),
+      prisma.student.update({
+        where: { userId: user.id },
+        data: {
+          firstName: data.firstName ?? student.firstName,
+          lastName: data.lastName ?? student.lastName,
+          address: data.address ?? student.address,
+          rollNumber: data.rollNumber ?? student.rollNumber,
+          class: data.class ?? student.class,
+        },
+      }),
+    ]);
+
+    return { user: updatedUser, student: updatedStudent };
+  } catch (error) {
+    if (error.code && error.code.startsWith("P")) throw error;
+    throw new AppError(error.message, 500);
+  }
 };

@@ -28,6 +28,7 @@ export class EditStudent {
   ) {}
 
   ngOnInit() {
+    console.log(this.studentData);
     this.setupForm();
   }
 
@@ -50,11 +51,10 @@ export class EditStudent {
         Validators.required,
         Validators.minLength(5),
       ]),
-      username: new FormControl(this.studentData.user.username, [
+      class: new FormControl(this.studentData.class, [
         Validators.required,
-        Validators.pattern(SignUpValidationPatterns.username),
-        Validators.minLength(3),
-        Validators.maxLength(20),
+        Validators.min(1),
+        Validators.max(12),
       ]),
       email: new FormControl(this.studentData.user.email, [
         Validators.required,
@@ -89,19 +89,19 @@ export class EditStudent {
       };
       console.log(payload);
 
-      // this.studentService.updateStudent(payload).subscribe({
-      //   next: (response: any) => {
-      //     this.loading = false;
-      //     if (response.success) {
-      //       this.dialogRef.close({ success: true, data: payload });
-      //     }
-      //   },
-      //   error: (err) => {
-      //     this.loading = false;
-      //     console.error('Error updating student:', err);
-      //     this.error = 'Failed to update student.';
-      //   },
-      // });
+      this.studentService.updateStudent(payload).subscribe({
+        next: (response: any) => {
+          this.loading = false;
+          if (response.success) {
+            this.dialogRef.close({ success: true, data: payload });
+          }
+        },
+        error: (err) => {
+          this.loading = false;
+          console.error('Error updating student:', err);
+          this.error = 'Failed to update student.';
+        },
+      });
     }
   }
 }

@@ -21,6 +21,12 @@ export class StudentManagementService {
     return this.http.get<StudentListResponse>(API_URL + '/api/v1/students/student-list?page=' + page + '&limit=' + limit + '&search=' + searchTerm);
   }
   addStudent(student:any) {
-    return this.http.post<StudentResponse>(API_URL + '/api/v1/students', student);
+    return this.http.post<StudentResponse>(API_URL + '/api/v1/students/create-student', student);
+  }
+  updateStudent(student:any) {
+    return this.http.post<StudentResponse>(API_URL + `/api/v1/students/update-student/${student.userId}`, student);
+  }
+  deleteStudent(studentId:string) {
+    return this.http.delete(API_URL + `/api/v1/students/${studentId}`);
   }
 }

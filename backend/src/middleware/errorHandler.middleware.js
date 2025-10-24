@@ -1,3 +1,4 @@
+const { createLogger } = require('../modules/logs/log.service');
 const AppError = require('../utils/AppError');
 
 const handleCastErrorDB = err =>
@@ -74,18 +75,12 @@ module.exports = async (err, req, res, next) => {
   try {
     await createLogger({
       userId: req.user?.id || null,      
-      userName: req.user?.name || null, 
+      userName: req.user?.username || null, 
       level: 'ERROR',
       category: 'API',
-      action: `${req.method} ${req.originalUrl}`,
-      ipAddress: req.ip,
+      actionType: `${req.method} ${req.originalUrl}`, 
       message: error.message,
-      method: req.method,
-      path: req.originalUrl,
-      meta: {
-        stack: error.stack,
-        body: req.body
-      }
+      meta: { body: req.body }
     });
   } catch (logErr) {
     console.error('Failed to log error:', logErr);

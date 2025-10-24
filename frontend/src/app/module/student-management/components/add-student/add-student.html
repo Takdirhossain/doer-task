@@ -9,7 +9,7 @@
     <div class="flex flex-space-between gap-3">
       <div class="flex-1">
         <label for="rollNumber">Roll Number</label>
-        <input type="number" id="rollNumber" formControlName="rollNumber" min="1" />
+        <input type="number" id="rollNumber" formControlName="rollNumber" min="1" placeholder="Ex:101"/>
         <div *ngIf="addStudentForm.get('rollNumber')?.touched">
           <div class="form-error" *ngIf="addStudentForm.get('rollNumber')?.hasError('required')">
             Roll Number is Required
@@ -21,7 +21,7 @@
       </div>
       <div class="flex-1">
         <label for="username">Username</label>
-        <input type="text" id="username" formControlName="username" />
+        <input type="text" id="username" formControlName="username" placeholder="Ex:abc123" />
         <div *ngIf="addStudentForm.get('username')?.touched">
           <div class="form-error" *ngIf="addStudentForm.get('username')?.hasError('required')">
             Username is Required
@@ -32,13 +32,16 @@
           <div class="form-error" *ngIf="addStudentForm.get('username')?.hasError('maxlength')">
             Username must not exceed 20 characters
           </div>
+          <div class="form-error" *ngIf="addStudentForm.get('username')?.hasError('pattern')">
+            Username must start with a letter and contain only letters, numbers, and underscores
+          </div>
         </div>
       </div>
     </div>
     <div class="flex flex-space-between gap-3">
       <div class="flex-1 mt-3">
         <label for="firstName">First Name</label>
-        <input type="text" id="firstName" formControlName="firstName" />
+        <input type="text" id="firstName" formControlName="firstName" placeholder="Ex:John" />
         <div *ngIf="addStudentForm.get('firstName')?.touched">
           <div class="form-error" *ngIf="addStudentForm.get('firstName')?.hasError('required')">
             First Name is Required
@@ -50,7 +53,7 @@
       </div>
       <div class="flex-1 mt-3">
         <label for="lastName">Last Name</label>
-        <input type="text" id="lastName" formControlName="lastName" />
+        <input type="text" id="lastName" formControlName="lastName" placeholder="Ex:Smith" />
         <div *ngIf="addStudentForm.get('lastName')?.touched">
           <div class="form-error" *ngIf="addStudentForm.get('lastName')?.hasError('required')">
             Last Name is Required
@@ -64,29 +67,26 @@
 
     <div class="flex flex-space-between gap-3">
       <div class="flex-1 mt-3">
-        <label for="mobile">Mobile </label>
-        <input type="text" id="mobile" formControlName="mobile" />
-        <div *ngIf="addStudentForm.get('mobile')?.touched">
-          <div class="form-error" *ngIf="addStudentForm.get('mobile')?.hasError('required')">
+        <label for="mobileNumber">Mobile </label>
+        <input type="text" id="mobileNumber" formControlName="mobileNumber" placeholder="Ex:1234567890" />
+        <div *ngIf="addStudentForm.get('mobileNumber')?.touched">
+          <div class="form-error" *ngIf="addStudentForm.get('mobileNumber')?.hasError('required')">
             Mobile Number is Required
           </div>
-          <div class="form-error" *ngIf="addStudentForm.get('mobile')?.hasError('pattern')">
+          <div class="form-error" *ngIf="addStudentForm.get('mobileNumber')?.hasError('pattern')">
             Invalid mobile number
           </div>
-          <div
-            class="form-error"
-            *ngIf="
-              addStudentForm.get('mobile')?.hasError('minlength') ||
-              addStudentForm.get('mobile')?.hasError('maxlength')
-            "
-          >
+          <div class="form-error" *ngIf="
+              addStudentForm.get('mobileNumber')?.hasError('minlength') ||
+              addStudentForm.get('mobileNumber')?.hasError('maxlength')
+            ">
             Mobile must be exactly 11 digits
           </div>
         </div>
       </div>
       <div class="flex-1 mt-3">
         <label for="address">Address</label>
-        <input type="text" id="address" formControlName="address" />
+        <input type="text" id="address" formControlName="address" placeholder="Ex:123 Main Street" />
         <div *ngIf="addStudentForm.get('address')?.touched">
           <div class="form-error" *ngIf="addStudentForm.get('address')?.hasError('required')">
             Address is Required
@@ -97,38 +97,68 @@
         </div>
       </div>
     </div>
-    <div class="mt-3">
-      <label for="email">Email</label>
-      <input type="email" id="email" formControlName="email" />
-      <div *ngIf="addStudentForm.get('email')?.touched">
-        <div class="form-error" *ngIf="addStudentForm.get('email')?.hasError('required')">
-          Email is Required
+    <div class="flex flex-space-between gap-3">
+      <div class="flex-1 mt-3">
+        <label for="email">Email</label>
+        <input type="email" id="email" formControlName="email" placeholder="Ex:abc123@gmail.com" />
+        <div *ngIf="addStudentForm.get('email')?.touched">
+          <div class="form-error" *ngIf="addStudentForm.get('email')?.hasError('required')">
+            Email is Required
+          </div>
+          <div class="form-error" *ngIf="addStudentForm.get('email')?.hasError('pattern')">
+            Invalid email format
+          </div>
         </div>
-        <div class="form-error" *ngIf="addStudentForm.get('email')?.hasError('pattern')">
-          Invalid email format
+      </div>
+      <div class="flex-1 mt-3">
+        <label for="dateOfBirth">Date of Birth</label>
+        <input type="date" id="dateOfBirth" formControlName="dateOfBirth" placeholder="Ex:2000-01-01" />
+        <div *ngIf="addStudentForm.get('dateOfBirth')?.touched">
+          <div class="form-error" *ngIf="addStudentForm.get('dateOfBirth')?.hasError('required')">
+            Date of Birth is Required
+          </div>
         </div>
       </div>
     </div>
-
-    <div class="mt-3">
-      <label for="password">Password</label>
-      <input type="text" id="password" formControlName="password" />
-      <div *ngIf="addStudentForm.get('password')?.touched">
-        <div class="form-error" *ngIf="addStudentForm.get('password')?.hasError('required')">
-          Password is Required
-        </div>
-        <div class="form-error" *ngIf="addStudentForm.get('password')?.hasError('minlength')">
-          Password must be at least 6 characters
-        </div>
-        <div class="form-error" *ngIf="addStudentForm.get('password')?.hasError('maxlength')">
-          Password must not exceed 20 characters
+    <div class="flex flex-space-between gap-3">
+      <div class="flex-1 mt-3">
+        <label for="class">Class Name</label>
+        <input type="number" id="class" formControlName="class" placeholder="Ex:10" min="1" max="12" />
+        <div *ngIf="addStudentForm.get('class')?.touched">
+          <div class="form-error" *ngIf="addStudentForm.get('class')?.hasError('required')">
+            Class Name is Required
+          </div>
+          <div class="form-error" *ngIf="addStudentForm.get('class')?.hasError('min')">
+            Class Name must be at least 1
+          </div>
+          <div class="form-error" *ngIf="addStudentForm.get('class')?.hasError('max')">
+            Class Name must be at most 12
+          </div>
         </div>
       </div>
-    </div>
 
+      <div class="mt-3 flex-1">
+        <label for="password_hash">Password</label>
+        <input type="text" id="password_hash" formControlName="password_hash" />
+        <div *ngIf="addStudentForm.get('password_hash')?.touched">
+          <div class="form-error" *ngIf="addStudentForm.get('password_hash')?.hasError('required')">
+            Password is Required
+          </div>
+          <div class="form-error" *ngIf="addStudentForm.get('password_hash')?.hasError('minlength')">
+            Password must be at least 6 characters
+          </div>
+          <div class="form-error" *ngIf="addStudentForm.get('password_hash')?.hasError('maxlength')">
+            Password must not exceed 20 characters
+          </div>
+        </div>
+      </div>
+
+    
+    </div>
+    <p *ngIf="error" class="form-error">{{ error }}</p>
     <div align="end">
       <button type="submit" class="btn-primary mt-4 w-100 pt-2 pb-2 btn" [disabled]="loading">
-        Sign Up <app-button-loading *ngIf="loading"></app-button-loading>
+        Add Student <app-button-loading *ngIf="loading"></app-button-loading>
       </button>
     </div>
   </form>
