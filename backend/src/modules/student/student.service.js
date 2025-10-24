@@ -1,6 +1,6 @@
 const { prisma } = require("../../config/database");
 const AppError = require("../../utils/AppError");
-const { createLogger } = require("../logs/log.service");
+const { createLogger } = require("../logManager/log.service");
 const { studentSchema } = require("./student.validation");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");

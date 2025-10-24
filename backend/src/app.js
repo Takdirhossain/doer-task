@@ -6,7 +6,7 @@ const path = require('path');
 app.use(express.json());
 app.use(cors());
 
-const logRoute = require('./modules/logs/log.route');
+const logRoute = require('./modules/logManager/log.route');
 const authRoute = require('./modules/auth/auth.route');
 const studentRoute = require('./modules/student/student.route');
 const attendanceRoute = require('./modules/attendance/attendance.route');

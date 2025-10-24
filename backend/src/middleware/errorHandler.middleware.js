@@ -1,4 +1,4 @@
-const { createLogger } = require('../modules/logs/log.service');
+const { createLogger } = require('../modules/logManager/log.service');
 const AppError = require('../utils/AppError');
 
 const handleCastErrorDB = err =>

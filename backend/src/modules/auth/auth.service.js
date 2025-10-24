@@ -2,7 +2,7 @@ const { prisma } = require("../../config/database");
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { hideFields } = require("../../utils/responseFilter");
-const { createLog, createLogger } = require("../logs/log.service");
+const { createLog, createLogger } = require("../logManager/log.service");
 const AppError = require("../../utils/AppError");
 const { getRequestContext } = require("../../utils/requestContext");
 
