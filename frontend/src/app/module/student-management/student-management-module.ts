@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { StudentManagementRoutingModule } from './student-management-routing-module';
+import { ReactiveFormsModule } from '@angular/forms';
 
 
 
@@ -9,7 +10,8 @@ import { StudentManagementRoutingModule } from './student-management-routing-mod
   declarations: [],
   imports: [
     CommonModule,
-    StudentManagementRoutingModule
+    StudentManagementRoutingModule,
+    ReactiveFormsModule
   ]
 })
 export class StudentManagementModule { }
