@@ -1,35 +1,32 @@
 const apiResponse = require("../../utils/apiResponse");
 const { registerSchema, loginSchema } = require("./auth.validation");
 const authService = require("./auth.service");
+const AppError = require("../../utils/AppError");
+const catchAsync = require("../../utils/catchAsync");
 
-exports.register = async (req, res) => {
-    try {
+exports.register = catchAsync(async (req, res) => {
       const { error } = registerSchema.validate(req.body);
-      if (error) return res.status(400).json(apiResponse(false, error.message));
+      if (error) return next(new AppError(error.message, 400));
   
       const user = await authService.registerUser(req.body);
       res.json(apiResponse(true, 'User registered successfully', user));
-    } catch (err) {
-      res.status(400).json(apiResponse(false, err.message));
-    }
-  };
+    
+  });
 
-  exports.login = async (req, res) => {
-   
-    try {
+  exports.login = catchAsync(async (req, res) => {
       const { error } = loginSchema.validate(req.body);
       if (error) return res.status(400).json(apiResponse(false, error.message));
       
       let meta = {
         ipAddress: req.headers['x-forwarded-for'] || req.socket.remoteAddress,
         userAgent: req.headers['user-agent'],
+        path: req.path,
+        method: req.method,
       }
       const user = await authService.loginUser(req.body, meta);
       res.json(apiResponse(true, 'User logged in successfully', user));
-    } catch (err) {
-      res.status(400).json(apiResponse(false, err.message));
-    }
-  };
+   
+  });
 
   exports.logout = async (req, res) => {
     try {

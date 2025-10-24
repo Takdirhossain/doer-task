@@ -3,10 +3,10 @@ const { parse } = require("csv-parse");
 const service = require("./student.service");
 const { studentSchema, profileUpdateSchema } = require("./student.validation");
 const apiResponse = require("../../utils/apiResponse");
-
-exports.uploadCsv = async (req, res) => {
-  try {
-    if (!req.file) return res.status(400).json({ message: "CSV file required" });
+const catchAsync = require("../../utils/catchAsync");
+exports.uploadCsv = catchAsync(async (req, res) => {
+  
+    if (!req.file) return res.status(400).json(apiResponse(false, "CSV file required"));
 
     const rows = [];
     const parser = fs.createReadStream(req.file.path).pipe(
@@ -17,61 +17,39 @@ exports.uploadCsv = async (req, res) => {
     fs.unlinkSync(req.file.path);
 
     const result = await service.importFromCsv(rows);
-    res.json({ success: true, ...result });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
+    res.json(apiResponse(true, 'Student imported successfully', result));
+  
+});
 
-exports.create = async (req, res) => {
-  try {
+exports.create = catchAsync(async (req, res) => {
     const data = await service.create(req);
-    res.status(201).json({ success: true, data });
-  } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
-  }
-};
+    res.json(apiResponse(true, 'Student created successfully', data));
+});
 
-exports.list = async (req, res) => {
-  try {
+exports.list = catchAsync(async (req, res) => {
     const { page = 1, limit = 10, search } = req.query;
     let teacherId = req.user.id;
     const data = await service.list({ page, limit, search, teacherId });
     res.json(apiResponse(true, 'Student list fetched successfully', data));
-  } catch (err) {
-    res.status(500).json(apiResponse(false, err.message));
-  }
-};
+});
 
-exports.getById = async (req, res) => {
-  try {
+exports.getById = catchAsync(async (req, res) => {
    const studentId = req.params.id;
     const student = await service.getById(studentId);
-    if (!student) return res.status(404).json({ message: "Student not found" });
-    res.json({ success: true, data: student });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-};
+    if (!student) return res.status(404).json(apiResponse(false, "Student not found"));
+    res.json(apiResponse(true, 'Student fetched successfully', student));
+});
 
-exports.update = async (req, res) => {
-  try {
+exports.update = catchAsync(async (req, res) => {
     const studentId = req.params.id;
     const data = profileUpdateSchema.validate(req.body);
     console.log(data)
     if (data.error) return res.status(400).json({ success: false, message: data.error.details[0].message });
     const updated = await service.update(studentId, data.value);
-    res.json({ success: true, data: updated });
-  } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
-  }
-};
+    res.json(apiResponse(true, 'Student updated successfully', updated));
+});
 
-exports.remove = async (req, res) => {
-  try {
+exports.remove = catchAsync(async (req, res) => {
     await service.remove(req.params.id);
-    res.json({ success: true, message: "Deleted successfully" });
-  } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
-  }
-};
+    res.json(apiResponse(true, 'Student deleted successfully'));
+});
