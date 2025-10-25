@@ -17,7 +17,7 @@ CREATE TABLE "users" (
     "email" VARCHAR(255) NOT NULL,
     "passwordHash" VARCHAR(255) NOT NULL,
     "mobileNumber" VARCHAR(20) NOT NULL,
-    "role" "UserRole" NOT NULL DEFAULT 'STUDENT',
+    "roleId" TEXT,
     "status" "UserStatus" NOT NULL DEFAULT 'ACTIVE',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -32,7 +32,7 @@ CREATE TABLE "students" (
     "teacherId" TEXT,
     "firstName" VARCHAR(100) NOT NULL,
     "lastName" VARCHAR(100) NOT NULL,
-    "class" VARCHAR(50),
+    "class" INTEGER,
     "rollNumber" INTEGER,
     "dateOfBirth" TIMESTAMP(3),
     "address" TEXT,
@@ -77,6 +77,7 @@ CREATE TABLE "login_logs" (
 CREATE TABLE "logs" (
     "id" TEXT NOT NULL,
     "userId" TEXT,
+    "userName" TEXT,
     "level" "LogLevel" NOT NULL DEFAULT 'INFO',
     "category" VARCHAR(100),
     "action" VARCHAR(100),
@@ -89,6 +90,38 @@ CREATE TABLE "logs" (
     "deletedAt" TIMESTAMP(3),
 
     CONSTRAINT "logs_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "roles" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "roles_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "permissions" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "module" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "permissions_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "role_permissions" (
+    "id" TEXT NOT NULL,
+    "roleId" TEXT NOT NULL,
+    "permissionId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "role_permissions_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -110,9 +143,6 @@ CREATE INDEX "users_email_idx" ON "users"("email");
 CREATE INDEX "users_status_idx" ON "users"("status");
 
 -- CreateIndex
-CREATE INDEX "users_role_idx" ON "users"("role");
-
--- CreateIndex
 CREATE UNIQUE INDEX "students_userId_key" ON "students"("userId");
 
 -- CreateIndex
@@ -123,6 +153,9 @@ CREATE INDEX "students_teacherId_idx" ON "students"("teacherId");
 
 -- CreateIndex
 CREATE INDEX "students_class_idx" ON "students"("class");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "students_class_rollNumber_key" ON "students"("class", "rollNumber");
 
 -- CreateIndex
 CREATE INDEX "attendances_studentId_idx" ON "attendances"("studentId");
@@ -160,6 +193,18 @@ CREATE INDEX "logs_createdAt_idx" ON "logs"("createdAt");
 -- CreateIndex
 CREATE INDEX "logs_category_idx" ON "logs"("category");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "roles_name_key" ON "roles"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "permissions_name_module_key" ON "permissions"("name", "module");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "role_permissions_roleId_permissionId_key" ON "role_permissions"("roleId", "permissionId");
+
+-- AddForeignKey
+ALTER TABLE "users" ADD CONSTRAINT "users_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "roles"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
 -- AddForeignKey
 ALTER TABLE "students" ADD CONSTRAINT "students_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -174,3 +219,9 @@ ALTER TABLE "login_logs" ADD CONSTRAINT "login_logs_userId_fkey" FOREIGN KEY ("u
 
 -- AddForeignKey
 ALTER TABLE "logs" ADD CONSTRAINT "logs_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_roleId_fkey" FOREIGN KEY ("roleId") REFERENCES "roles"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "role_permissions" ADD CONSTRAINT "role_permissions_permissionId_fkey" FOREIGN KEY ("permissionId") REFERENCES "permissions"("id") ON DELETE CASCADE ON UPDATE CASCADE;

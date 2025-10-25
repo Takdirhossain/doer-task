@@ -30,6 +30,10 @@ export class CsvImport {
             class: 'w-16 text-center',
           },
           {
+            key: 'className',
+            label: 'Class Name',
+          },
+          {
             key: 'firstName',
             label: 'First Name',
           },
@@ -46,9 +50,10 @@ export class CsvImport {
             label: 'Mobile Number',
           },
           {
-            key: 'className',
-            label: 'Class Name',
+            key:'reason',
+            label:'Reason',
           }
+          
         ],
         showActions: false,
       };

@@ -4,73 +4,97 @@ const { createLogger } = require("../logManager/log.service");
 const { studentSchema } = require("./student.validation");
 const bcrypt = require("bcryptjs");
 
-let uniqueUsers = [];
-let duplicateUsers = [];
 
-exports.importFromCsv = async (rows) => {
-  uniqueUsers = [];
-  duplicateUsers = [];
 
-  for (let index = 0; index < rows.length; index++) {
-    const row = rows[index];
-    const data = {
-      username: row.user_name.trim(),
-      email: row.email.trim(),
-      mobileNumber: row.mobile_number.trim(),
-      firstName: row.first_name?.trim() || null,
-      lastName: row.last_name?.trim() || null,
-      className: row.class?.trim() || null,
-      dateOfBirth: row.date_of_birth ? new Date(row.date_of_birth) : null,
-      rollNumber: row.roll_number ? Number(row.roll_number) : null,
-      password_hash: row.password_hash?.trim() || "123456",
-      address: row.address?.trim() || null,
-    };
+exports.filterExistingUsers = async (uniqueUsers, duplicateUsers) => {
+  const usernames = uniqueUsers.map(u => u.username);
+  const emails = uniqueUsers.map(u => u.email);
+  const mobiles = uniqueUsers.map(u => u.mobileNumber);
 
-    const { error } = studentSchema.validate(data);
-    if (error) {
-      duplicateUsers.push({
-        reason: error.details.map((d) => d.message).join(", "),
-        rowNumber: index + 2,
-        ...data,
-      });
-      continue;
-    }
+  const existingUsers = await prisma.user.findMany({
+    where: {
+      OR: [
+        { username: { in: usernames } },
+        { email: { in: emails } },
+        { mobileNumber: { in: mobiles } },
+      ],
+    },
+  });
 
-    const exists = await prisma.user.findFirst({
+  const userMap = new Map();
+  existingUsers.forEach(u => {
+    userMap.set(u.username, u);
+    userMap.set(u.email, u);
+    userMap.set(u.mobileNumber, u);
+  });
+
+  const finalUniqueUsers = [];
+  const finalDuplicateUsers = [...duplicateUsers]; 
+
+  for (const user of uniqueUsers) {
+    const conflict = userMap.get(user.username) || userMap.get(user.email) || userMap.get(user.mobileNumber);
+    const conflictInStudentTable = await prisma.student.findFirst({
       where: {
-        OR: [
-          { username: data.username },
-          { email: data.email },
-          { mobileNumber: data.mobileNumber },
-        ],
+        userId: user?.class,
+        rollNumber: user?.rollNumber,
       },
     });
-
-    if (exists) {
-      duplicateUsers.push({
-        reason: "Already exists in database",
-        rowNumber: index + 2,
-        conflictField:
-          exists.username === data.username
-            ? "username"
-            : exists.email === data.email
-              ? "email"
-              : "mobileNumber",
-        existingId: exists.id,
-        ...data,
+    if (conflict ) {
+      finalDuplicateUsers.push({
+        reason: 'Already exists in database',
+        conflictField: conflict.username === user.username ? 'username'
+          : conflict.email === user.email ? 'email' : 'mobileNumber',
+        existingId: conflict.id,
+        ...user,
+      });
+    } 
+    else if (conflictInStudentTable) {
+      finalDuplicateUsers.push({
+        reason: 'Already exists in database',
+        conflictField: 'class and roll number',
+        existingId: conflictInStudentTable.id,
+        ...user,
       });
     } else {
-      uniqueUsers.push(data);
+      finalUniqueUsers.push(user);
     }
   }
 
-  return {
-    uniqueCount: uniqueUsers.length,
-    duplicateCount: duplicateUsers.length,
-    uniqueUsers,
-    duplicateUsers,
-  };
+  return { finalUniqueUsers, finalDuplicateUsers };
 };
+
+// Insert unique users in chunks
+// exports.insertUsers = async (users) => {
+//   const chunkSize = 1000; // adjust as needed
+//   const results = [];
+
+//   for (let i = 0; i < users.length; i += chunkSize) {
+//     const chunk = users.slice(i, i + chunkSize);
+
+//     // Hash passwords for chunk
+//     const hashedChunk = await Promise.all(
+//       chunk.map(async u => ({
+//         ...u,
+//         passwordHash: await bcrypt.hash(u.password_hash, 10),
+//       }))
+//     );
+
+//     const inserted = await prisma.user.createMany({
+//       data: hashedChunk.map(u => ({
+//         username: u.username,
+//         email: u.email,
+//         mobileNumber: u.mobileNumber,
+//         passwordHash: u.passwordHash,
+//         role: 'STUDENT',
+//       })),
+//       skipDuplicates: true,
+//     });
+
+//     results.push(inserted);
+//   }
+
+//   return results;
+// };
 exports.create = async (req) => {
   const teacherId = req.user.id;
   if (uniqueUsers.length == 0) throw new Error("No unique users found");

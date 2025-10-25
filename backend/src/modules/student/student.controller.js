@@ -1,27 +1,63 @@
 const fs = require("fs");
 const { parse } = require("csv-parse");
 const service = require("./student.service");
-const {
-  studentSchema,
-  profileUpdateSchema,
-  studentUpdateSchema,
-  studentIdParamSchema,
-} = require("./student.validation");
+const { studentSchema, profileUpdateSchema, studentUpdateSchema, studentIdParamSchema } = require("./student.validation");
 const apiResponse = require("../../utils/apiResponse");
 const catchAsync = require("../../utils/catchAsync");
 const AppError = require("../../utils/AppError");
+
 exports.uploadCsv = catchAsync(async (req, res, next) => {
   if (!req.file) return next(new AppError("CSV file required", 400));
-  const rows = [];
+
+  const duplicateUsers = [];
+  const uniqueUsers = [];
+
   const parser = fs
     .createReadStream(req.file.path)
     .pipe(parse({ columns: true, skip_empty_lines: true, trim: true }));
-  for await (const record of parser) {
-    rows.push(record);
+
+let rowIndex = 0;
+for await (const record of parser) {
+  rowIndex++; // this replaces index from entries()
+  
+  // process record
+  const data = {
+    username: record.user_name?.trim(),
+    email: record.email?.trim(),
+    mobileNumber: record.mobile_number?.trim(),
+    firstName: record.first_name?.trim() || null,
+    lastName: record.last_name?.trim() || null,
+    class: record.class ? Number(record.class) : null,
+    dateOfBirth: record.date_of_birth ? new Date(record.date_of_birth) : null,
+    rollNumber: record.roll_number ? Number(record.roll_number) : null,
+    password_hash: record.password_hash?.trim() || "123456",
+    address: record.address?.trim() || null,
+  };
+
+  // Validation
+  const { error } = studentSchema.validate(data);
+  if (error) {
+    duplicateUsers.push({
+      rowNumber: rowIndex + 1, // +1 for header row
+      reason: error.details.map(d => d.message).join(', '),
+      ...data
+    });
+    continue;
   }
-  fs.unlinkSync(req.file.path);
-  const result = await service.importFromCsv(rows);
-  res.json(apiResponse(true, "Student imported successfully", result));
+
+  uniqueUsers.push(data);
+}
+
+  await fs.promises.unlink(req.file.path);
+
+  const { finalUniqueUsers, finalDuplicateUsers } = await service.filterExistingUsers(uniqueUsers, duplicateUsers);
+
+  res.json(apiResponse(true, "CSV processed successfully", {
+    uniqueCount: finalUniqueUsers.length,
+    duplicateCount: finalDuplicateUsers.length,
+    uniqueUsers: finalUniqueUsers,
+    duplicateUsers: finalDuplicateUsers,
+  }));
 });
 
 exports.saveCsv = catchAsync(async (req, res) => {

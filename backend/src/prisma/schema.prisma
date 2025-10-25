@@ -37,7 +37,8 @@ model User {
   email         String   @unique @db.VarChar(255)
   passwordHash  String   @db.VarChar(255)
   mobileNumber  String   @unique @db.VarChar(20)
-  role          UserRole @default(STUDENT)
+  role          Role?    @relation(fields: [roleId], references: [id])
+  roleId        String?    
   status        UserStatus @default(ACTIVE)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -50,7 +51,6 @@ model User {
   @@index([username])
   @@index([email])
   @@index([status])
-  @@index([role])
   @@map("users")
 }
 
@@ -70,6 +70,7 @@ model Student {
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   attendanceRecords Attendance[]
 
+  @@unique([class, rollNumber])
   @@index([userId])
   @@index([teacherId])
   @@index([class])
@@ -146,9 +147,11 @@ model Role {
   id          String           @id @default(cuid())
   name        String           @unique
   rolePermissions RolePermission[]
+  users           User[] 
 
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
+  @@map("roles")
 }
 
 model Permission {
@@ -161,6 +164,7 @@ model Permission {
   updatedAt   DateTime         @updatedAt
 
   @@unique([name, module])
+  @@map("permissions")
 }
 
 model RolePermission {
@@ -173,5 +177,6 @@ model RolePermission {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
-  @@unique([roleId, permissionId]) 
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
 }
