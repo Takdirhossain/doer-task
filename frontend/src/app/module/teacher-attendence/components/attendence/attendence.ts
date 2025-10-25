@@ -6,83 +6,96 @@ import { TeacherAttendenceService } from '../../service/teacher-attendence-servi
 import { AttendanceResponse, StudentAttendance } from '../../model/attendence.model';
 import { Pagination } from '@app/module/login-log/model/login-log.model';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { TableConfig } from '@app/shared/model/common.model';
+import { DataTableComponent } from '@app/shared/components/data-table-component/data-table-component';
 
 @Component({
   selector: 'app-attendence',
   standalone: true,
-  imports: [CommonModule, MatTabsModule, MatTableModule, MatPaginatorModule],
+  imports: [CommonModule, MatTabsModule, MatTableModule, MatPaginatorModule, DataTableComponent],
   templateUrl: './attendence.html',
   styleUrl: './attendence.css'
 })
 export class Attendence implements OnInit {
   displayedColumns: string[] = ['studentId', 'name', 'username', 'status'];
-  presentData: StudentAttendance[] = [];
-  absentData: StudentAttendance[] = [];
+  tableConfig: TableConfig = {
+      columns: [
+        {
+          key: 'studentId',
+          label: 'Student ID',
+          class: 'w-16 text-center',
+        },
+        {
+          key: 'name',
+          label: 'Name',
+        },
+        {
+          key: 'username',
+          label: 'Username',
+        },
+        {
+          key: 'status',
+          label: 'Status',
+          class: 'w-20',
+        }
+      ],
+      showActions: false,
+    };
+  data: StudentAttendance[] = [];
+  activePage: 'present' | 'absent' = 'present';
   
   @ViewChild('presentPaginator') presentPaginator!: MatPaginator;
   @ViewChild('absentPaginator') absentPaginator!: MatPaginator;
   
-  filter: 'present' | 'absent' = 'present';
   loading = false;
   
-  paginationPresent: Pagination = {
+  pagination: Pagination = {
     total: 0,
     page: 1,
-    limit: 20,
-    totalPages: 0,
-  };
-  
-  paginationAbsent: Pagination = {
-    total: 0,
-    page: 1,
-    limit: 20,
+    limit: 10,
     totalPages: 0,
   };
 
   constructor(private attendanceService: TeacherAttendenceService) {}
 
   ngOnInit(): void {
-    this.getAttendance('present');
-    this.getAttendance('absent');
+    this.getAttendance('present', this.pagination.page, this.pagination.limit);
   }
 
-  getAttendance(filter: 'present' | 'absent') {
+  getAttendance(filter: 'present' | 'absent' = this.activePage, page = this.pagination.page, limit = this.pagination.limit) {
     this.loading = true;
-    const pagination = filter === 'present' ? this.paginationPresent : this.paginationAbsent;
     
-    this.attendanceService.getAttendence(filter, pagination.page, pagination.limit).subscribe({
+    this.attendanceService.getAttendence(filter, page, limit).subscribe({
       next: (res: AttendanceResponse) => {
-        if (filter === 'present') {
-          this.presentData = res.data.data;
-          this.paginationPresent.total = res.data.total;
-          this.paginationPresent.totalPages = res.data.totalPages;
-          this.paginationPresent.page = res.data.page;
-          this.paginationPresent.limit = res.data.limit;
-        } else {
-          this.absentData = res.data.data;
-          this.paginationAbsent.total = res.data.total;
-          this.paginationAbsent.totalPages = res.data.totalPages;
-          this.paginationAbsent.page = res.data.page;
-          this.paginationAbsent.limit = res.data.limit;
-        }
+        let data = res.data;
+        this.data = data?.data;
+        this.pagination.total = res.data.total;
+        this.pagination.totalPages = res.data.totalPages;
+        this.pagination.page = res.data.page;
+        this.pagination.limit = res.data.limit;
         this.loading = false;
       },
+     
       error: () => (this.loading = false)
     });
   }
 
-  onTabChange(filter: 'present' | 'absent') {
-    this.filter = filter;
-    this.getAttendance(filter);
-  }
+onTabChange(index: MatTabChangeEvent) {
+  this.activePage = index.index == 0 ? 'present' : 'absent';
+  this.getAttendance(this.activePage);
+}
 
-  onPageChange(event: PageEvent, filter: 'present' | 'absent') {
+  onPageChange(event: PageEvent) {
+    console.log(event);
     const pageNumber = event.pageIndex + 1;
-    const pagination = filter === 'present' ? this.paginationPresent : this.paginationAbsent;
-    
-    pagination.page = pageNumber;
-    pagination.limit = event.pageSize;
-    
-    this.getAttendance(filter);
+    console.log(pageNumber);
+    this.getAttendance(this.activePage, pageNumber);
+
+ 
+  }
+    onPageSizeChange(pageSize: number): void {
+    this.pagination.limit = pageSize;
+    this.pagination.page = 1;
+    this.getAttendance(this.activePage, this.pagination.page, this.pagination.limit);
   }
 }

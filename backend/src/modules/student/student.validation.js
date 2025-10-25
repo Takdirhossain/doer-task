@@ -239,3 +239,13 @@ exports.studentUpdateSchema = Joi.object({
     }),
     id: Joi.string(),
 });
+
+exports.studentIdParamSchema = Joi.object({
+  id: Joi.string()
+    .required()
+    .messages({
+      'string.base': 'Student ID must be a string',
+      'string.empty': 'Student ID is required',
+      'any.required': 'Student ID is required',
+    }),
+}); 

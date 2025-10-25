@@ -3,7 +3,6 @@ const AppError = require("../../utils/AppError");
 const { createLogger } = require("../logManager/log.service");
 const { studentSchema } = require("./student.validation");
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
 
 let uniqueUsers = [];
 let duplicateUsers = [];
@@ -74,7 +73,7 @@ exports.importFromCsv = async (rows) => {
 };
 exports.create = async (req) => {
   const teacherId = req.user.id;
-  if (uniqueUsers.length === 0) throw new Error("No unique users found");
+  if (uniqueUsers.length == 0) throw new Error("No unique users found");
 
   const usersData = uniqueUsers.map((u) => ({
     username: u.username,
@@ -118,18 +117,18 @@ exports.create = async (req) => {
 
   return uniqueUsers;
 };
-exports.createStudent = async(data, teacherId, username) => {
- try {
-   const createStudent =  await prisma.$transaction(async (prismaTx) => {
+exports.createStudent = async (data, teacherId, username) => {
+  const result = await prisma.$transaction(async (prismaTx) => {
     const user = await prismaTx.user.create({
       data: {
         username: data.username,
         email: data.email,
         mobileNumber: data.mobileNumber,
         role: "STUDENT",
-        passwordHash: bcrypt.hashSync(data.password_hash, 10),
+        passwordHash: await bcrypt.hash(data.password_hash, 10),
       },
-    })
+    });
+
     const student = await prismaTx.student.create({
       data: {
         userId: user.id,
@@ -139,35 +138,31 @@ exports.createStudent = async(data, teacherId, username) => {
         dateOfBirth: data.dateOfBirth,
         rollNumber: data.rollNumber,
         address: data.address,
-        teacherId: teacherId,
+        teacherId,
       },
-    })
+    });
 
-    try {
-      await createLogger({
-        userId: teacherId,
-        userName: username,
-        level: 'INFO',
-        category: 'Add Student',
-        action: 'Add Student',
-        message: 'Student created successfully',
-        meta: { body: data }
-      });
-    } catch (logErr) {
-      console.log(logErr)
-      throw new AppError('Something went wrong during student creation', 500);
-    }
-
-    return {user, student};
+    return { user, student };
   });
- } catch (error) {
-  if (error.code && error.code.startsWith('P')) {
-    throw error; 
-  }
-  console.log(error)
-  throw new AppError(error.message, 500);
- }
-}
+
+  createLogger({
+    userId: teacherId,
+    userName: username,
+    level: 'INFO',
+    category: 'STUDENT',
+    action: 'CREATE',
+    message: 'Student created successfully',
+    meta: { body: data }
+  }).catch((logErr) => {
+    console.error("Logging failed:", logErr);
+  });
+
+  const { user, student } = result;
+  const { passwordHash, ...safeUser } = user;
+
+  return { user: safeUser, student };
+};
+
 exports.list = async ({ page = 1, limit = 10, search = "", teacherId }) => {
   const skip = (page - 1) * limit;
 
@@ -246,7 +241,6 @@ exports.update = async (id, data) => {
 };
 
 exports.remove = async (id, userId, username) => {
-  console.log(id, userId, username);
   const user = await prisma.user.findFirst({
     where: { id: id },
   });
@@ -263,26 +257,10 @@ exports.remove = async (id, userId, username) => {
     prisma.user.delete({ where: { id } }),
   ]);
 
-  try {
-    await createLogger({
-      userId: userId,
-      userName: username,
-      level: 'INFO',
-      category: 'Delete Student',
-      action: 'Delete Student',
-      message: 'Student deleted successfully',
-      meta: { body: { id } }
-    });
-  } catch (logErr) {
-    console.log(logErr)
-    throw new AppError('Something went wrong during student deletion', 500);
-  }
-
   return true;
 };
 
 exports.updateStudent = async (data, teacherId, studentId) => {
-  try {
     const user = await prisma.user.findUnique({
       where: { id: studentId },
     });
@@ -333,8 +311,4 @@ exports.updateStudent = async (data, teacherId, studentId) => {
     ]);
 
     return { user: updatedUser, student: updatedStudent };
-  } catch (error) {
-    if (error.code && error.code.startsWith("P")) throw error;
-    throw new AppError(error.message, 500);
-  }
 };

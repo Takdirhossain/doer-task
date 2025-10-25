@@ -2,37 +2,68 @@ import { Component } from '@angular/core';
 import { StudentManagementService } from '../../services/student-management-service';
 import Swal from 'sweetalert2';
 import { Student, StudentResponse } from '../../models/student-management.model';
-import { MatTabsModule } from '@angular/material/tabs';
+import { MatTabChangeEvent, MatTabsModule } from '@angular/material/tabs';
 import { MatTableModule } from '@angular/material/table';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ButtonLoading } from '@app/shared/components/button-loading/button-loading';
+import { TableConfig } from '@app/shared/model/common.model';
+import { DataTableComponent } from '@app/shared/components/data-table-component/data-table-component';
+import { Pagination } from '@app/module/login-log/model/login-log.model';
 
 @Component({
   selector: 'app-csv-import',
   templateUrl: './csv-import.html',
   styleUrls: ['./csv-import.css'],
-  imports: [MatTabsModule, MatTableModule, CommonModule, RouterLink, ButtonLoading],
+  imports: [MatTabsModule, MatTableModule, CommonModule, RouterLink, ButtonLoading, DataTableComponent],
 })
 export class CsvImport {
   loading: boolean = false;
   loadingSave: boolean = false;
   file: File | null = null;
-  displayedColumns: string[] = [
-    'rollNumber',
-    'username',
-    'firstName',
-    'lastName',
-    'email',
-    'mobileNumber',
-    'className',
-  ];
+
+  tableConfig: TableConfig = {
+        columns: [
+          {
+            key: 'rollNumber',
+            label: 'Roll Number'  ,
+            class: 'w-16 text-center',
+          },
+          {
+            key: 'firstName',
+            label: 'First Name',
+          },
+          {
+            key: 'lastName',
+            label: 'Last Name',
+          },
+          {
+            key: 'email',
+            label: 'Email',
+          },
+          {
+            key: 'mobileNumber',
+            label: 'Mobile Number',
+          },
+          {
+            key: 'className',
+            label: 'Class Name',
+          }
+        ],
+        showActions: false,
+      };
 
   uniqueUsers: Student[] = [];
   duplicateUsers: Student[] = [];
   uniqueCount: number = 0;
   duplicateCount: number = 0;
-
+  activePage: 'unique' | 'duplicate' = 'unique';
+  pagination: Pagination= {
+    total: 0,
+    page: 1,
+    limit: 10,
+    totalPages: 0,
+  };
   constructor(private StudentManagementService: StudentManagementService) {}
 
   onFileSelected(event: Event) {
@@ -66,13 +97,13 @@ export class CsvImport {
 
     this.loading = true;
     this.StudentManagementService.uploadCsv(formData).subscribe({
-      next: (res) => {
-        this.uniqueUsers = res.uniqueUsers || [];
-        this.duplicateUsers = res.duplicateUsers || [];
-        this.uniqueCount = res.uniqueCount || 0;
-        this.duplicateCount = res.duplicateCount || 0;
-        console.log(this.uniqueUsers);
-        console.log(this.duplicateUsers);
+      next: (res: any) => {
+        let data = res?.data
+        this.uniqueUsers = data?.uniqueUsers || [];
+        
+        this.duplicateUsers = data?.duplicateUsers || [];
+        this.uniqueCount = data?.uniqueCount || 0;
+        this.duplicateCount = data?.duplicateCount || 0;
         Swal.fire({
           icon: 'success',
           title: 'Upload success',
@@ -118,4 +149,5 @@ export class CsvImport {
       },
     });
   }
+
 }

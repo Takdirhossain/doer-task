@@ -1,11 +1,13 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { LoginLog, Pagination } from '../../model/login-log.model';
+import { GetLogsResponse, LogData, LoginLog, Pagination } from '../../model/login-log.model';
 import { LoginLogService } from '../../service/login-log-service';
 import { DatePipe, NgClass, TitleCasePipe } from '@angular/common';
 import { MatSelectModule } from '@angular/material/select';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { TableConfig } from '@app/shared/model/common.model';
+import { DataTableComponent } from '@app/shared/components/data-table-component/data-table-component';
 
 @Component({
   selector: 'app-log-log',
@@ -15,24 +17,52 @@ import { MatFormFieldModule } from '@angular/material/form-field';
     MatPaginatorModule,
     MatSelectModule,
     MatFormFieldModule,
-    TitleCasePipe,
-    NgClass,
-    DatePipe,
+    DataTableComponent,
   ],
   templateUrl: './log-log.html',
   styleUrls: ['./log-log.css'],
 })
 export class LogLog implements OnInit {
-  displayedColumns: string[] = [
-    'id',
-    'ipAddress',
-    'userAgent',
-    'message',
-    'actionType',
-    'status',
-    'actionTime',
-  ];
-  dataSource = new MatTableDataSource<LoginLog>([]);
+  tableConfig: TableConfig = {
+    columns: [
+      {
+        key: 'id',
+        label: 'ID',
+        class: 'w-16 text-center',
+      },
+      {
+        key: 'ipAddress',
+        label: 'IP Address',
+      },
+      {
+        key: 'userAgent',
+        label: 'User Agent',
+      },
+      {
+        key: 'message',
+        label: 'Message',
+        class: 'w-20',
+      },
+      {
+        key: 'actionType',
+        label: 'Action Type',
+        class: 'w-32',
+      },
+      {
+        key: 'status',
+        label: 'Status',
+        class: 'w-40',
+      },
+      {
+        key: 'actionTime',
+        label: 'Action Time',
+        class: 'max-w-xs truncate',
+      },
+    ],
+    showActions: false,
+  };
+  loginLogs: LoginLog[] = [];
+
   pagination: Pagination = {
     total: 0,
     page: 1,
@@ -41,7 +71,6 @@ export class LogLog implements OnInit {
   };
   loading = false;
   pageSizeOptions = [10, 20, 30, 40, 50];
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   constructor(private loginLogService: LoginLogService) {}
 
@@ -52,27 +81,26 @@ export class LogLog implements OnInit {
   getLogs() {
     this.loading = true;
     this.loginLogService.getLogs(this.pagination).subscribe({
-      next: (response) => {
-        this.dataSource.data = response.data.logs;
-        this.pagination = response.data.pagination;
+      next: (response: GetLogsResponse) => {
+        let data = response.data;
+        this.pagination = data.pagination;
+        this.loginLogs = data.logs;
       },
       error: (err) => console.error(err),
       complete: () => (this.loading = false),
     });
   }
 
-  onPageChange(event: PageEvent) {
-    this.pagination.page = event.pageIndex + 1;
-    this.pagination.limit = event.pageSize;
+  onPageSizeChange(pageSize: number): void {
+    this.pagination.limit = pageSize;
+    this.pagination.page = 1;
     this.getLogs();
   }
 
-  onLimitChange(limit: number) {
-    this.pagination.limit = limit;
-    this.pagination.page = 1;
-    if (this.paginator) {
-      this.paginator.firstPage();
-    }
-    this.getLogs();
-  }
+onPageChange(event: PageEvent): void {
+  const pageNumber = event.pageIndex + 1;
+  this.pagination.page = pageNumber;
+  this.pagination.limit = event.pageSize;
+  this.getLogs();
+}
 }

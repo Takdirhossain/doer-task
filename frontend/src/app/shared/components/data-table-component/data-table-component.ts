@@ -57,6 +57,7 @@ export class DataTableComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.setupTable();
+    console.log(this.data);
   }
 
   ngOnChanges(): void {

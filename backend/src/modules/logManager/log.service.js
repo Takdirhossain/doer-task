@@ -1,4 +1,5 @@
 const { prisma } = require("../../config/database");
+const { getRequestContext } = require("../../utils/requestContext");
 
 exports.createLog = async (data) => {
     try {
@@ -52,5 +53,21 @@ exports.getLogs = async (req, userId) => {
 };
 
 exports.createLogger = async(data) => {
-  
+  // try {
+  //   const { method, path, ipAddress, userAgent } = getRequestContext();
+  //   const log = await prisma.loginLog.create({
+  //     data: {
+  //       userId: data.userId,
+  //       ipAddress: data.ipAddress,
+  //       userAgent: data.userAgent,
+  //       message: data.message,
+  //       actionTime: new Date(),
+  //       actionType: data.actionType,
+  //       status: data.status,
+  //     }
+  //   });
+  //   return log;
+  // } catch (error) {
+  //   throw error;
+  // }
 }

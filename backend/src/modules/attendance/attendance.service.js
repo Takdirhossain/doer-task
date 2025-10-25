@@ -44,15 +44,16 @@ exports.present = async (studentId) => {
 };
 
 
-exports.getTodayAttendance = async (teacherId, page = 1, limit = 10, filter = "all") => {
+exports.getTodayAttendance = async (teacherId, page = 1, limit = 10, filter = "present") => {
   const { start, end } = getTodayRange();
-  const validFilters = ["all", "present", "absent", "late"];
+  const validFilters = ["all", "present", "absent", "late"]; 
+  page = parseInt(page, 10) || 1;
+  limit = parseInt(limit, 10) || 10;
 
   if (!validFilters.includes(filter.toLowerCase())) {
     throw new Error(`Invalid filter. Use one of: ${validFilters.join(", ")}`);
   }
-
-  try {    
+  
     const students = await prisma.student.findMany({
       where: { 
         teacherId: teacherId,
@@ -116,22 +117,14 @@ exports.getTodayAttendance = async (teacherId, page = 1, limit = 10, filter = "a
       status: attendanceMap[s.userId] || "ABSENT",
     }));
 
+    const presentCount = attendanceList.filter(a => a.status === "PRESENT").length;
+    const absentCount = attendanceList.filter(a => a.status === "ABSENT").length;
+
     if (filter.toLowerCase() !== "all") {
       attendanceList = attendanceList.filter(
         a => a.status.toUpperCase() === filter.toUpperCase()
       );
     }
-
-    const originalList = students.map(s => ({
-      studentId: s.userId,
-      name: `${s.firstName} ${s.lastName}`,
-      username: s.user.username,
-      status: attendanceMap[s.userId] || "ABSENT",
-    }));
-
-    const presentCount = originalList.filter(a => a.status === "PRESENT").length;
-    const absentCount = originalList.filter(a => a.status === "ABSENT").length;
-    const lateCount = originalList.filter(a => a.status === "LATE").length;
 
     const startIndex = (page - 1) * limit;
     const endIndex = startIndex + limit;
@@ -148,13 +141,10 @@ exports.getTodayAttendance = async (teacherId, page = 1, limit = 10, filter = "a
       stats: {
         present: presentCount,
         absent: absentCount,
-        late: lateCount,
       },
       data: paginatedList,
     };
-  } catch (error) {
-    throw error;
-  }
+ 
 };
 
 
@@ -164,7 +154,7 @@ function getWorkingDaysBetween(start, end) {
 }
 
 exports.getStudentYearlyStats = async (studentId) => {
-  try {
+
     const student = await prisma.student.findUnique({
       where: { userId: studentId },
       select: { createdAt: true },
@@ -205,13 +195,11 @@ exports.getStudentYearlyStats = async (studentId) => {
       totalPresent,
       totalAbsent: totalAbsent < 0 ? 0 : totalAbsent,
     };
-  } catch (error) {
-    throw error;
-  }
 };
 
 exports.getPresentHistory = async (studentId, page = 1, limit = 10) => {
-  try {
+    page = parseInt(page, 10) || 1;
+    limit = parseInt(limit, 10) || 10;
     const skip = (page - 1) * limit;
 
     const total = await prisma.attendance.count({
@@ -242,12 +230,4 @@ exports.getPresentHistory = async (studentId, page = 1, limit = 10) => {
         totalPages,
       },
     };
-  } catch (error) {
-    console.error(error);
-    return {
-      success: false,
-      message: error.message,
-      data: null,
-    };
-  }
 };

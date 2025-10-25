@@ -1,5 +1,5 @@
 
-export interface AttendanceResponseRoot {
+export interface AttendanceResponse {
   success: boolean;
   message: string;
   data: AttendanceDataWrapper;

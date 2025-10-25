@@ -16,6 +16,7 @@ import { DataTableComponent } from '@app/shared/components/data-table-component/
 import { TableConfig } from '@app/shared/model/common.model';
 import { EditStudent } from '../edit-student/edit-student';
 import Swal from 'sweetalert2';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-student-list',
@@ -27,7 +28,8 @@ import Swal from 'sweetalert2';
     MatSelectModule,
     MatFormFieldModule,
     MatDialogModule,
-    DataTableComponent
+    DataTableComponent,
+    RouterLink
   ],
   templateUrl: './student-list.html',
   styleUrls: ['./student-list.css']
