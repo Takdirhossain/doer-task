@@ -20,7 +20,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"password\": \"123456\",\n    \"username\": \"takdir\"\n}",
+							"raw": "{\n    \"username\": \"takdir\",\n    \"password\": \"111111\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -61,7 +61,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"testteacher\",\r\n    \"email\": \"testteacher@gmail.com\",\r\n    \"mobile\": \"12345678905\",\r\n    \"password\" : \"123456\"\r\n}",
+							"raw": "{\r\n    \"username\": \"takdir\",\r\n    \"email\": \"takdir@gmail.com\",\r\n    \"mobile\": \"12345678911\",\r\n    \"password\" : \"123456\",\r\n    \"role\" : \"cmh6egvuv0000vpbcm330bt1y\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -118,16 +118,6 @@
 						"disableBodyPruning": true
 					},
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dmcnpiZzAwMDB2cDYwNml6cTRmY3UiLCJpYXQiOjE3NjA4ODQ3MDgsImV4cCI6MTc2MDg4ODMwOH0.qOJAI8dZ4paW8G_jfyFuwbuU0PyWFdc9tQ_MGCO1bco",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"body": {
@@ -160,18 +150,47 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "get-logger",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": \"123456\",\n    \"username\": \"takdir\"\n}"
+						},
+						"url": {
+							"raw": "{{local}}/api/v1/logs/get-logger",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"logs",
+								"get-logger"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			],
-			"auth": {
-				"type": "bearer",
-				"bearer": [
-					{
-						"key": "token",
-						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dmcnpiZzAwMDB2cDYwNml6cTRmY3UiLCJpYXQiOjE3NjA4ODQ3MDgsImV4cCI6MTc2MDg4ODMwOH0.qOJAI8dZ4paW8G_jfyFuwbuU0PyWFdc9tQ_MGCO1bco",
-						"type": "string"
-					}
-				]
-			},
 			"event": [
 				{
 					"listen": "prerequest",
@@ -203,16 +222,6 @@
 				{
 					"name": "process-csv",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dmcnpiZzAwMDB2cDYwNml6cTRmY3UiLCJpYXQiOjE3NjA4ODQ3MDgsImV4cCI6MTc2MDg4ODMwOH0.qOJAI8dZ4paW8G_jfyFuwbuU0PyWFdc9tQ_MGCO1bco",
-									"type": "string"
-								}
-							]
-						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -257,6 +266,15 @@
 					"request": {
 						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n            {\r\n                \"rowNumber\": 2,\r\n                \"reason\": \"Role is required\",\r\n                \"username\": \"aarav_singh\",\r\n                \"email\": \"aarav.singh@email.com\",\r\n                \"mobileNumber\": \"9876543210\",\r\n                \"firstName\": \"Aarav\",\r\n                \"lastName\": \"Singh\",\r\n                \"class\": 10,\r\n                \"dateOfBirth\": \"2005-01-15T00:00:00.000Z\",\r\n                \"rollNumber\": 101,\r\n                \"password_hash\": \"123456\",\r\n                \"address\": \"123 MG Road, Delhi\"\r\n            }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "{{local}}/api/v1/students/save-csv",
 							"host": [
@@ -278,16 +296,6 @@
 						"disableBodyPruning": true
 					},
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dmcnpiZzAwMDB2cDYwNml6cTRmY3UiLCJpYXQiOjE3NjA4ODQ3MDgsImV4cCI6MTc2MDg4ODMwOH0.qOJAI8dZ4paW8G_jfyFuwbuU0PyWFdc9tQ_MGCO1bco",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"body": {
@@ -301,7 +309,7 @@
 							]
 						},
 						"url": {
-							"raw": "{{local}}/api/v1/students/student-list?page=1&limist=10&search=Tanvi",
+							"raw": "{{local}}/api/v1/students/student-list?page=1&limist=10",
 							"host": [
 								"{{local}}"
 							],
@@ -319,11 +327,102 @@
 								{
 									"key": "limist",
 									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add student",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\r\n{\r\n    \"username\": \"aarav_singh\",\r\n    \"email\": \"aarav.singh@email.com\",\r\n    \"mobileNumber\": \"9876543210\",\r\n    \"firstName\": \"Aarav\",\r\n    \"lastName\": \"Singh\",\r\n    \"class\": 10,\r\n    \"dateOfBirth\": \"2005-01-15T00:00:00.000Z\",\r\n    \"rollNumber\": 101,\r\n    \"password_hash\": \"123456\",\r\n    \"address\": \"123 MG Road, Delhi\",\r\n    \"role\": \"cmh6eh1r50001vpbcnmwnnwja\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}/api/v1/students/create-student",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"students",
+								"create-student"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit student",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"rollNumber\": 61,\r\n    \"firstName\": \"Robin Hossain khan\",\r\n    \"lastName\": \"Bowman\",\r\n    \"address\": \"Distinctio Ipsum e\",\r\n    \"class\": 9,\r\n    \"email\": \"vigodumelo@mailinator.com\",\r\n    \"mobile\": \"83912345543\",\r\n    \"status\": true,\r\n    \"userId\": \"cmh7i4cmv0001vpbg8upzmqle\",\r\n    \"id\": \"cmh7i4cn30003vpbg1rxtzm3w\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}/api/v1/students/update-student/cmh7i4cmv0001vpbg8upzmqle",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"students",
+								"update-student",
+								"cmh7i4cmv0001vpbg8upzmqle"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
 								},
 								{
-									"key": "search",
-									"value": "Tanvi"
+									"key": "",
+									"value": "",
+									"disabled": true
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Student",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{local}}/api/v1/students/cmh7i4cmv0001vpbg8upzmqle",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"students",
+								"cmh7i4cmv0001vpbg8upzmqle"
 							]
 						}
 					},
@@ -345,7 +444,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dmcnpiZzAwMDB2cDYwNml6cTRmY3UiLCJpYXQiOjE3NjA4ODQ3MDgsImV4cCI6MTc2MDg4ODMwOH0.qOJAI8dZ4paW8G_jfyFuwbuU0PyWFdc9tQ_MGCO1bco",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtaDdld3RwZTAwMDJ2cDdzdjkwZGx2MHEiLCJyb2xlIjoiY21oNmVoMXI1MDAwMXZwYmNubXdubndqYSIsInJvbGVOYW1lIjoiU1RVREVOVCIsInVzZXJuYW1lIjoiZmFyZGVlbl9hbGkiLCJpYXQiOjE3NjE0NzA4MzcsImV4cCI6MTc2MTkwMjgzN30.Q6OaFVKwkCjUd-iQJavdrTIxOOM2kwAtuIBS9dJqG6g",
 									"type": "string"
 								}
 							]
@@ -354,16 +453,10 @@
 						"header": [],
 						"body": {
 							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "file",
-									"type": "file",
-									"src": "/C:/Users/takdi/Downloads/students.csv"
-								}
-							]
+							"formdata": []
 						},
 						"url": {
-							"raw": "{{local}}/api/v1/students/cmgwp4f74002pvppks2lhat4k",
+							"raw": "{{local}}/api/v1/students/cmh7ewtpe0002vp7sv90dlv0q",
 							"host": [
 								"{{local}}"
 							],
@@ -371,7 +464,7 @@
 								"api",
 								"v1",
 								"students",
-								"cmgwp4f74002pvppks2lhat4k"
+								"cmh7ewtpe0002vp7sv90dlv0q"
 							]
 						}
 					},
@@ -424,18 +517,21 @@
 			"item": [
 				{
 					"name": "Present",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
 					"request": {
 						"auth": {
 							"type": "bearer",
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dwNGY3NDAwMnF2cHBranBnNmNhc2kiLCJpYXQiOjE3NjA4ODU2MjMsImV4cCI6MTc2MDg4OTIyM30.XOQ8plBUnjZSADTbakGTLOUenjlI2QnIAKm3TeWYUNU",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtaDdld3RwZTAwMDJ2cDdzdjkwZGx2MHEiLCJyb2xlIjoiY21oNmVoMXI1MDAwMXZwYmNubXdubndqYSIsInJvbGVOYW1lIjoiU1RVREVOVCIsInVzZXJuYW1lIjoiZmFyZGVlbl9hbGkiLCJpYXQiOjE3NjE0NzA4MzcsImV4cCI6MTc2MTkwMjgzN30.Q6OaFVKwkCjUd-iQJavdrTIxOOM2kwAtuIBS9dJqG6g",
 									"type": "string"
 								}
 							]
 						},
-						"method": "POST",
+						"method": "GET",
 						"header": [],
 						"body": {
 							"mode": "formdata",
@@ -473,7 +569,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dwNGY3NDAwMnF2cHBranBnNmNhc2kiLCJpYXQiOjE3NjA4ODU2MjMsImV4cCI6MTc2MDg4OTIyM30.XOQ8plBUnjZSADTbakGTLOUenjlI2QnIAKm3TeWYUNU",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtaDdld3RwZTAwMDJ2cDdzdjkwZGx2MHEiLCJyb2xlIjoiY21oNmVoMXI1MDAwMXZwYmNubXdubndqYSIsInJvbGVOYW1lIjoiU1RVREVOVCIsInVzZXJuYW1lIjoiZmFyZGVlbl9hbGkiLCJpYXQiOjE3NjE0NzA4MzcsImV4cCI6MTc2MTkwMjgzN30.Q6OaFVKwkCjUd-iQJavdrTIxOOM2kwAtuIBS9dJqG6g",
 									"type": "string"
 								}
 							]
@@ -516,7 +612,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dwNGY3NDAwMnF2cHBranBnNmNhc2kiLCJpYXQiOjE3NjA4ODU2MjMsImV4cCI6MTc2MDg4OTIyM30.XOQ8plBUnjZSADTbakGTLOUenjlI2QnIAKm3TeWYUNU",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtaDdld3RwZTAwMDJ2cDdzdjkwZGx2MHEiLCJyb2xlIjoiY21oNmVoMXI1MDAwMXZwYmNubXdubndqYSIsInJvbGVOYW1lIjoiU1RVREVOVCIsInVzZXJuYW1lIjoiZmFyZGVlbl9hbGkiLCJpYXQiOjE3NjE0NzA4MzcsImV4cCI6MTc2MTkwMjgzN30.Q6OaFVKwkCjUd-iQJavdrTIxOOM2kwAtuIBS9dJqG6g",
 									"type": "string"
 								}
 							]
@@ -554,22 +650,12 @@
 			"name": "Teacher Attendence",
 			"item": [
 				{
-					"name": "New Request",
+					"name": "Get Today attendence",
 					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dmcnpiZzAwMDB2cDYwNml6cTRmY3UiLCJpYXQiOjE3NjA4ODQ3MDgsImV4cCI6MTc2MDg4ODMwOH0.qOJAI8dZ4paW8G_jfyFuwbuU0PyWFdc9tQ_MGCO1bco",
-									"type": "string"
-								}
-							]
-						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{local}}/api/v1/attendance/get-today-attendance?filter=present",
+							"raw": "{{local}}/api/v1/attendance/get-today-attendance?page=1&limit=10&filter=absent",
 							"host": [
 								"{{local}}"
 							],
@@ -582,17 +668,288 @@
 							"query": [
 								{
 									"key": "filter",
-									"value": "present"
+									"value": "present",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
 								},
 								{
 									"key": "filter",
-									"value": "absent",
-									"disabled": true
+									"value": "absent"
 								}
 							]
 						}
 					},
 					"response": []
+				}
+			]
+		},
+		{
+			"name": "Authorization",
+			"item": [
+				{
+					"name": "Role",
+					"item": [
+						{
+							"name": "create role",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n   \"name\":\"student\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}/api/v1/authorization/create-role",
+									"host": [
+										"{{local}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"authorization",
+										"create-role"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Edit Role",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n   \"name\":\"teacher\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}/api/v1/authorization/update-role/cmh6egvuv0000vpbcm330bt1y",
+									"host": [
+										"{{local}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"authorization",
+										"update-role",
+										"cmh6egvuv0000vpbcm330bt1y"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get roles",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{local}}/api/v1/authorization/get-roles",
+									"host": [
+										"{{local}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"authorization",
+										"get-roles"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Permission",
+					"item": [
+						{
+							"name": "Create Permission",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"export_list\",\r\n    \"module\": \"STUDENT\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}/api/v1/authorization/create-permission",
+									"host": [
+										"{{local}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"authorization",
+										"create-permission"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Edit Permission",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"name\":\"create\",\r\n    \"module\": \"user\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}/api/v1/authorization/update-permission/cmh6ft3oh0000vpnklbqf4lhk",
+									"host": [
+										"{{local}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"authorization",
+										"update-permission",
+										"cmh6ft3oh0000vpnklbqf4lhk"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Permission",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{local}}/api/v1/authorization/get-permissions",
+									"host": [
+										"{{local}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"authorization",
+										"get-permissions"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "delete permission",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{local}}/api/v1/authorization/delete-permission/cmh6ft3oh0000vpnklbqf4lhk",
+									"host": [
+										"{{local}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"authorization",
+										"delete-permission",
+										"cmh6ft3oh0000vpnklbqf4lhk"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Role Permission",
+					"item": [
+						{
+							"name": "Add Role Permission",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"roleId\": \"cmh6egvuv0000vpbcm330bt1y\",\r\n    \"permissionId\":\"cmh7ccy0h0007vp4cvqpq276e\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{local}}/api/v1/authorization/create-role-permission",
+									"host": [
+										"{{local}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"authorization",
+										"create-role-permission"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Role Permission",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{local}}/api/v1/authorization/get-role-permissions",
+									"host": [
+										"{{local}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"authorization",
+										"get-role-permissions"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Edit Permission",
+							"request": {
+								"method": "GET",
+								"header": []
+							},
+							"response": []
+						}
+					]
 				}
 			]
 		}
@@ -602,7 +959,7 @@
 		"bearer": [
 			{
 				"key": "token",
-				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtZ3dwNGY3NDAwMnF2cHBranBnNmNhc2kiLCJpYXQiOjE3NjA4ODU2MjMsImV4cCI6MTc2MDg4OTIyM30.XOQ8plBUnjZSADTbakGTLOUenjlI2QnIAKm3TeWYUNU",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImNtaDd1anMwdTAwMHBqcTFvYm9nNHRncG4iLCJyb2xlIjoiY21oN3BuNWF4MDAwMGpxMmI1MmltMjdidCIsInJvbGVOYW1lIjoiVEVBQ0hFUiIsInVzZXJuYW1lIjoidGVzdHRlYWNoZXIiLCJpYXQiOjE3NjE0OTY5NTksImV4cCI6MTc2MTkyODk1OX0.Fr2MkQpfWfZv3hMTWcbIf1sNPVxPy4mYsMFoI3eMx9s",
 				"type": "string"
 			}
 		]
@@ -634,7 +991,7 @@
 	"variable": [
 		{
 			"key": "local",
-			"value": ""
+			"value": "http://localhost:5000"
 		}
 	]
 }
