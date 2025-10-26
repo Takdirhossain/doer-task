@@ -4,7 +4,7 @@ const { createRole, getRoles, updateRole, createPermission, getPermissions, upda
 const auth = require("../../middleware/auth.middleware");
 
 router.post("/create-role", auth, createRole);
-router.get("/get-roles", auth, getRoles);
+router.get("/get-roles", getRoles);
 router.put("/update-role/:id", auth, updateRole);
 
 router.post("/create-permission", auth,  createPermission);
