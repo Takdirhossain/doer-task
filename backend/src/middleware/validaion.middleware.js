@@ -1,31 +1,21 @@
-const AppError = require("../utils/AppError");
+const AppError = require('../utils/AppError');
 
-const validateBody = (schema, options = {}) => (req, res, next) => {
-  const { error, value } = schema.validate(req.body, {
-    abortEarly: false,       // report all errors
-    allowUnknown: false,     // disallow unknown keys
-    presence: "required",    // all keys required
-    ...options,
-  });
+const validateBody = (req, res, next) => {
+  if (!req) return next(new AppError('Request object is missing', 500));
 
-  if (error) {
-    const unknownKeyErrors = error.details.filter(
-      (d) => d.type === "object.unknown"
-    );
+  const method = req.method.toLowerCase();
 
-    let message;
-    if (unknownKeyErrors.length > 0) {
-      message = `Unknown field(s): ${unknownKeyErrors
-        .map((d) => d.context.key)
-        .join(", ")}`;
-    } else {
-      message = error.details.map((d) => d.message).join(", ");
-    }
-
-    return next(new AppError(message, 400));
+  const contentType = req.headers['content-type'];
+  if (contentType && contentType.includes('multipart/form-data')) {
+    return next(); 
   }
 
-  req.body = value;
+  if (['post', 'put', 'patch'].includes(method)) {
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return next(new AppError('Payload is required', 400));
+    }
+  }
+
   next();
 };
 

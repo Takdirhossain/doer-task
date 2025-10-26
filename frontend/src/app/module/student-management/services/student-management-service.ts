@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Student, StudentResponse } from '../models/student-management.model';
 import { StudentListResponse } from '../models/student-list.model';
+import { RolesResponse } from '@app/shared/model/roles.model';
 
 @Injectable({
   providedIn: 'root'
@@ -28,5 +29,8 @@ export class StudentManagementService {
   }
   deleteStudent(studentId:string) {
     return this.http.delete(API_URL + `/api/v1/students/${studentId}`);
+  }
+  getRoles(): Observable<RolesResponse> {
+    return this.http.get<RolesResponse>(API_URL + '/api/v1/authorization/get-roles');
   }
 }

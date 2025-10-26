@@ -9,6 +9,7 @@ import { AuthService } from '../../services/AuthService';
 import { LoginResponse } from '../../models/login.model';
 import Swal from 'sweetalert2';
 import { ButtonLoading } from '@app/shared/components/button-loading/button-loading';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -30,7 +31,7 @@ export class Login implements OnInit {
   error: string = '';
   loading: boolean = false;
 
-  constructor(private formBuilder: FormBuilder, private authService: AuthService, private router: Router) {}
+  constructor(private formBuilder: FormBuilder, private authService: AuthService, private router: Router, private toastr:ToastrService) {}
 
   ngOnInit() {
     this.setupForm();
@@ -57,14 +58,7 @@ export class Login implements OnInit {
       this.authService.login(username, password).subscribe({
         next: (response: LoginResponse) => {
           this.loading = false;
-          console.log('Login Success:', response);
-          Swal.fire({
-            icon: 'success',
-            title: 'Logged in!',
-            text: 'Welcome back, ' + response.data.user.username,
-            timer: 2000,
-            showConfirmButton: false,
-          });
+        this.toastr.success(response.message, 'Success');
           localStorage.setItem('token', response.data.token);
           localStorage.setItem('user', JSON.stringify(response.data.user));
           if(response.data.user.role == 'TEACHER'){
@@ -77,6 +71,7 @@ export class Login implements OnInit {
           console.log(err);
           this.error = err;
           this.loading = false;
+          this.toastr.error(err, 'Error');
         },
       });
     } else {

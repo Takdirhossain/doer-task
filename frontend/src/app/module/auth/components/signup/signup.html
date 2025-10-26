@@ -48,6 +48,12 @@
                         <div class="form-error" *ngIf="signupForm.get('password')?.hasError('maxlength')">Password must not exceed 20 characters</div>
                     </div>
                 </div>
+                <div class="input-box mt-2">
+                    <label for="role">Role<span class="required">*</span></label>
+                    <select id="role" class="w-100" formControlName="role">
+                        <option *ngFor="let role of roles" [value]="role.id" selected="{{role.name == 'TEACHER'}}">{{ role.name }}</option>
+                    </select>
+                </div>
                 <span class="form-error pt-4" *ngIf="error">{{error}}</span>
 
                 <button type="submit" class="btn-primary mt-4 w-100 pt-2 pb-2 btn" [disabled]="loading">Sign Up <app-button-loading *ngIf="loading"></app-button-loading></button>

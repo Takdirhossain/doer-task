@@ -3,20 +3,21 @@ const { getRequestContext } = require("../../utils/requestContext");
 
 exports.createLog = async (data) => {
     try {
+        const { ipAddress, userAgent } = getRequestContext();
         const log = await prisma.loginLog.create({
             data: {
-                userId: data.userId,
-                ipAddress: data.ipAddress,
-                userAgent: data.userAgent,
-                message: data.message,
+                userId: data?.userId,
+                ipAddress: ipAddress,
+                userAgent: userAgent,
+                message: data?.message,
                 actionTime: new Date(),
-                actionType: data.actionType,
+                actionType: data?.actionType,
                 status: data.status,
             }
         });
         return log;
     } catch (error) {
-        throw error;
+      console.error("⚠️ Log creation failed:", error.message);
     }
 }
 exports.getLogs = async (req, userId) => {
@@ -53,21 +54,24 @@ exports.getLogs = async (req, userId) => {
 };
 
 exports.createLogger = async(data) => {
-  // try {
-  //   const { method, path, ipAddress, userAgent } = getRequestContext();
-  //   const log = await prisma.loginLog.create({
-  //     data: {
-  //       userId: data.userId,
-  //       ipAddress: data.ipAddress,
-  //       userAgent: data.userAgent,
-  //       message: data.message,
-  //       actionTime: new Date(),
-  //       actionType: data.actionType,
-  //       status: data.status,
-  //     }
-  //   });
-  //   return log;
-  // } catch (error) {
-  //   throw error;
-  // }
+  try {
+    const { method, path, ipAddress } = getRequestContext();
+    const log = await prisma.log.create({
+      data: {
+        userId:data?.userId,
+        userName:data?.userName,
+        level:data?.level,
+        category:data?.category,
+        action:data?.action,
+        ipAddress:ipAddress,
+        message:data?.message,
+        method:method,
+        path:path,
+        meta:data?.meta,
+      }
+    });
+    return log;
+  } catch (error) {
+    console.error("⚠️ Log creation failed:", error.message);
+  }
 }

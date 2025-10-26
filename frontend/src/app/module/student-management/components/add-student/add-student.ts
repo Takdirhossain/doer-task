@@ -23,6 +23,7 @@ import { StudentManagementService } from '../../services/student-management-serv
 import { SignUpValidationPatterns } from '@app/shared/validation/validation';
 import { MatIcon } from '@angular/material/icon';
 import Swal from 'sweetalert2';
+import { Role, RolesResponse } from '@app/shared/model/roles.model';
 
 @Component({
   selector: 'app-add-student',
@@ -46,12 +47,14 @@ export class AddStudent implements OnInit {
   addStudentForm!: FormGroup;
   loading = false;
   error?: string;
+  roles: Role[] = [];
   constructor(
     private dialogRef: MatDialogRef<AddStudent>,
     private formBuilder: FormBuilder,
     private addStudentService: StudentManagementService
   ) {}
   ngOnInit() {
+    this.getRoles();
     this.setupForm();
   }
   setupForm() {
@@ -139,5 +142,23 @@ export class AddStudent implements OnInit {
         },
       });
     }
+  }
+  getRoles() {
+    this.addStudentService.getRoles().subscribe({
+      next: (response: RolesResponse) => {
+        console.log(response);
+        this.roles = response.data;
+      },
+      error: (error) => {
+        console.error('Error getting roles:', error?.error?.message);
+        Swal.fire({
+          icon: 'error',
+          title: error?.error?.message,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        this.error = error?.error?.message;
+      },
+    });
   }
 }

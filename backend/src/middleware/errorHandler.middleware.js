@@ -23,10 +23,6 @@ const handlePrismaError = err => {
   }
 };
 
-const handleValidationErrorDB = err => {
-  const errors = Object.values(err.errors).map(el => el.message);
-  return new AppError(`Invalid input: ${errors.join(', ')}`, 400);
-};
 
 const handleJWTError = () => new AppError('Invalid authentication token. Please log in again.', 401);
 const handleJWTExpiredError = () => new AppError('Your session has expired. Please log in again.', 401);

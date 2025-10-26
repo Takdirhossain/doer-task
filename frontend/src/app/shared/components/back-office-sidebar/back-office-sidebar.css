@@ -4,7 +4,7 @@
     box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
     border-radius: 7px;
     
-    min-height: 90vh;
+    min-height: 100vh;
 }
 .sidebar-use-image{
     width: 60px;
@@ -15,8 +15,7 @@
     background-size: cover;
 }
 .sidebar-container{
-  padding-top: 30px;
-  padding-left: 30px;
+margin-top: 60px;
     
 }
 .sidebar-content{
@@ -39,4 +38,7 @@
 }
 .view-profile{
     color: var(--primary-color);
+}
+.sidebar-container{
+    position: fixed;
 }

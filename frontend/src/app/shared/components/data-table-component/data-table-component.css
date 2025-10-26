@@ -1,0 +1,30 @@
+.limit-option {
+  width: 80px !important;
+  height: 40px !important;
+  padding-right: 24px; 
+  background-color: #fff;
+border: 1px solid #ced4da;
+  font-size: 14px;
+
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
+}
+.common-datatable-wrapper{
+    margin-top: 30px;
+}
+.mdc-data-table__header-row {
+    background-color: #1C6EA4 !important;
+    color: white !important;
+}
+.search-input{
+    height: 40px !important;
+}
+.search{
+    height: 40px !important;
+}

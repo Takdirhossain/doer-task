@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '@app/module/auth/services/AuthService';
-import Swal from 'sweetalert2';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-back-office-header',
@@ -12,7 +12,7 @@ import Swal from 'sweetalert2';
 })
 export class BackOfficeHeader implements OnInit {
   user: any;
-  constructor(private authService: AuthService,private router: Router) {}
+  constructor(private authService: AuthService,private router: Router, private toast:ToastrService) {}
   ngOnInit(): void {
     let data = localStorage.getItem('user');
     this.user = JSON.parse(data!);
@@ -20,19 +20,13 @@ export class BackOfficeHeader implements OnInit {
   logOut() {
     this.authService.logout().subscribe({
       next: () => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Logged out!',
-          text: 'You have been logged out successfully',
-          timer: 2000,
-          showConfirmButton: false,
-        });
+        this.toast.success('Logged out successfully');
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         this.router.navigate(['/auth/login']);
       },
       error: (err: any) => {
-        console.log(err);
+        this.toast.error(err.error.message);
       },
     });
   }

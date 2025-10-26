@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { Login } from './components/login/login';
 import { Signup } from './components/signup/signup';
+import { RolesResolver } from '@app/core/resolvers/roles.resolver';
 
 const routes: Routes = [
   {
@@ -10,7 +11,8 @@ const routes: Routes = [
   },
   {
     path: 'signup',
-    component: Signup
+    component: Signup,
+    resolve: { roles: RolesResolver }
   }
 ];
 

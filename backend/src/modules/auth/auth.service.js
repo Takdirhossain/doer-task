@@ -4,10 +4,16 @@ const jwt = require("jsonwebtoken");
 const { hideFields } = require("../../utils/responseFilter");
 const { createLog, createLogger } = require("../logManager/log.service");
 const AppError = require("../../utils/AppError");
-const { getRequestContext } = require("../../utils/requestContext");
 
 exports.registerUser = async (data) => {
   const hashedPassword = await bcrypt.hash(data.password, 10);
+  const role = await prisma.role.findUnique({
+    where: {
+      id: data?.role,
+    },
+  });
+
+  if (!role) throw new AppError("Role not found", 404);
 
   const user = await prisma.user.create({
     data: {
@@ -15,15 +21,33 @@ exports.registerUser = async (data) => {
       email: data.email,
       mobileNumber: data.mobile,
       passwordHash: hashedPassword,
-      role: "TEACHER",
+      roleId: data?.role,
     },
   });
 
-  const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
-    expiresIn: "5d",
-  });
+  const token = jwt.sign(
+    { id: user.id, role: role?.id, roleName: role?.name },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "5d",
+    }
+  );
 
-  const { passwordHash, ...sanitizedUser } = user;
+  const { passwordHash, ...rest } = user;
+
+  const sanitizedUser = {
+    ...rest,
+    role: role?.name || null,
+  };
+  createLogger({
+    userId: user.id,
+    userName: user?.username,
+    level: "INFO",
+    category: "register",
+    action: "register",
+    message: "User registered successfully",
+    meta: sanitizedUser,
+  });
 
   return { user: sanitizedUser, token };
 };
@@ -41,29 +65,37 @@ exports.loginUser = async (data) => {
   );
   if (!isPasswordValid) throw new AppError("Invalid password", 401);
   if (user.status === "INACTIVE") throw new AppError("You are inactive", 401);
+  const role = await prisma.role.findUnique({
+    where: {
+      id: user.roleId,
+    },
+  });
 
   const token = jwt.sign(
-    { id: user.id, role: user.role, username: user.username },
+    { id: user.id, role: role?.id, roleName: role?.name },
     process.env.JWT_SECRET,
     { expiresIn: "5d" }
   );
-  let userData = hideFields(user, ["passwordHash"]);
-  // createLog({ipAddress, userAgent, userId: user.id, actionType: 'login', status: 'success', message: 'User logged in successfully'});
-  // createLogger({
-  //   method,
-  //   path,
-  //   ipAddress,
-  //   userId: user.id,
-  //   userName: user.username,
-  //   level: 'INFO',
-  //   category: 'login',
-  //   action: 'login',
-  //   ipAddress: meta.ipAddress,
-  //   message: 'User logged in successfully',
-  //   method: meta.method,
-  //   path: meta.path,
-  //   meta: meta
-  // });
+  const{passwordHash,...rest} = user;
+  const userData = {
+    ...rest,
+    role: role?.name || null,
+  };
+  createLog({
+    userId: user.id,
+    actionType: "login",
+    status: "success",
+    message: "User logged in successfully",
+  });
+  createLogger({
+    userId: user.id,
+    userName: user?.username,
+    level: "INFO",
+    category: "login",
+    action: "login",
+    message: "User logged in successfully",
+    meta: userData,
+  });
 
   return { user: userData, token };
 };

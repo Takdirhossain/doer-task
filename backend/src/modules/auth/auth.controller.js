@@ -5,9 +5,9 @@ const AppError = require("../../utils/AppError");
 const catchAsync = require("../../utils/catchAsync");
 
 exports.register = catchAsync(async (req, res, next) => {
-      const { error } = registerSchema.validate(req.body);
+      const { error, value } = registerSchema.validate(req.body);
      if (error) return next(new AppError(error.details[0].message, 400));
-      const user = await authService.registerUser(req.body);
+      const user = await authService.registerUser(value);
       res.json(apiResponse(true, 'User registered successfully', user));
     
   });

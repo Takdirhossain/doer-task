@@ -1,40 +1,29 @@
 <div class="common-datatable-wrapper">
-  <div class="flex justify-between items-center mb-3" *ngIf="showSearch || showLimit">
+  <div class="flex flex-space-between" *ngIf="showSearch || showLimit">
     <div *ngIf="showLimit" class="flex items-center gap-3">
-      <mat-form-field appearance="outline">
-        <mat-label>Items per page</mat-label>
-        <mat-select [value]="pageSize" (selectionChange)="onPageSizeChange($event.value)">
-          <mat-option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</mat-option>
-        </mat-select>
-      </mat-form-field>
+      <select class="limit-option" [ngModel]="pageSize" (ngModelChange)="onPageSizeChange($event)">
+        <option *ngFor="let size of pageSizeOptions" [value]="size">
+          {{ size }}
+        </option>
+      </select>
     </div>
 
-    <div *ngIf="showSearch" class="flex items-center">
-      <mat-form-field appearance="outline" class="w-64">
-        <mat-label>Search</mat-label>
+    <div *ngIf="showSearch" class="flex items-center search-input">
+      <div class="relative w-64">
         <input
-          matInput
+          type="text"
           [(ngModel)]="searchTerm"
           (ngModelChange)="onSearchChange($event)"
           placeholder="Search..."
+          class="search"
         />
-        <button
-          *ngIf="searchTerm"
-          matSuffix
-          mat-icon-button
-          aria-label="Clear"
-          (click)="searchTerm=''; onSearchChange('')"
-        >
-          <mat-icon>close</mat-icon>
-        </button>
-      </mat-form-field>
+      </div>
     </div>
   </div>
 
-  <div *ngIf="!loading" class="table-container">
+  <div *ngIf="!loading" class="table-container mt-4">
     <div class="overflow-x-auto">
       <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 w-full">
-
         <ng-container *ngFor="let column of config.columns" [matColumnDef]="column.key">
           <th mat-header-cell *matHeaderCellDef [class]="column.class">
             {{ column.label }}

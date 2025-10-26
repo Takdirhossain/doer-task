@@ -3,6 +3,7 @@ import { BackOfficeLayout } from './shared/layout/back-office-layout/back-office
 import { AuthGuard } from './core/guards/auth.guard';
 import { RoleGuard } from './core/guards/role.guard';
 import { TeacherDashboardResolver } from './core/resolvers/teacher-dashboard.resolver';
+import { RolesResolver } from './core/resolvers/roles.resolver';
 
 export const routes: Routes = [
   {

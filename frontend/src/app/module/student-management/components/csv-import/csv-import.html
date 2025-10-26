@@ -24,13 +24,15 @@
     </div>
   </div>
 
-  <div class="mt-4">
+  <div class="mt-4" *ngIf="uniqueUsers.length || duplicateUsers.length">
     <mat-tab-group>
       <mat-tab label="Unique ({{ uniqueCount }})">
         <app-data-table-component
           [data]="uniqueUsers"
           [config]="tableConfig"
           [loading]="loading"
+          [showSearch]="false"
+          [showLimit]="false"
           [totalRecords]="pagination.total"
           [pageSize]="pagination.limit"
           [pageIndex]="pagination.page - 1"
@@ -44,6 +46,7 @@
           [config]="tableConfig"
           [loading]="loading"
           [showSearch]="false"
+          [showLimit]="false"
           [totalRecords]="pagination.total"
           [pageSize]="pagination.limit"
           [pageIndex]="pagination.page - 1"

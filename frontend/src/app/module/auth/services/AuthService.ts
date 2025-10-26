@@ -35,7 +35,7 @@ export class AuthService {
   logout(): Observable<void> {
     this.btnLoadingSubject.next(true);
 
-    return this.http.post<void>(`${API_URL}/api/v1/auth/logout`,{})
+    return this.http.get<void>(`${API_URL}/api/v1/auth/logout`,{})
       .pipe(
         tap(() => this.btnLoadingSubject.next(false)),
         catchError(err => throwError(() => err?.error?.message || 'Logout failed'))

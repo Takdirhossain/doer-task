@@ -14,11 +14,13 @@ const globalErrorHandler = require('./middleware/errorHandler.middleware');
 const authorizationRoute = require('./modules/authorization/authorization.route');
 const AppError = require('./utils/AppError');
 const requestContextMiddleware = require('./middleware/requestContext.middleware');
+const validateBody = require('./middleware/validaion.middleware');
 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'view', 'index.html'));
 });
 app.use(requestContextMiddleware);
+app.use(validateBody);
 
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/logs', logRoute);

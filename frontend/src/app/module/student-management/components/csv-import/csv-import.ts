@@ -10,6 +10,7 @@ import { ButtonLoading } from '@app/shared/components/button-loading/button-load
 import { TableConfig } from '@app/shared/model/common.model';
 import { DataTableComponent } from '@app/shared/components/data-table-component/data-table-component';
 import { Pagination } from '@app/module/login-log/model/login-log.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-csv-import',
@@ -69,7 +70,7 @@ export class CsvImport {
     limit: 10,
     totalPages: 0,
   };
-  constructor(private StudentManagementService: StudentManagementService) {}
+  constructor(private StudentManagementService: StudentManagementService,private toastr:ToastrService) {}
 
   onFileSelected(event: Event) {
     const target = event.target as HTMLInputElement;
@@ -90,10 +91,7 @@ export class CsvImport {
 
   processFile() {
     if (!this.file) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Select a file',
-      });
+      this.toastr.error('Select a csv file');
       return;
     }
 
