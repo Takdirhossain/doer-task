@@ -118,6 +118,7 @@ export class StudentListComponent implements OnInit {
       )
       .subscribe((term) => {
         this.getStudents(1, this.pagination.limit, term);
+        this.searchTerm = term;
       });
   }
 
@@ -150,7 +151,6 @@ export class StudentListComponent implements OnInit {
   }
 
 onPageChange(event: PageEvent): void {
-  console.log(event);
   const pageNumber = event.pageIndex + 1;
   this.pagination.page = pageNumber;
   this.pagination.limit = event.pageSize;
@@ -189,7 +189,6 @@ editStudent(student: StudentList): void {
 }
 
   deleteStudent(student: StudentList): void {
-    console.log('Delete student:', student);
    Swal.fire({
     title: 'Are you sure?',
     text: `You Want to delete ${student.firstName} ${student.lastName}?`,
@@ -222,5 +221,18 @@ editStudent(student: StudentList): void {
 
     }
   });
+  }
+   downloadCsv() {
+    this.studentManagementService.exportStudents(this.searchTerm).subscribe((blob) => {
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'students.csv'; 
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    });
   }
 }

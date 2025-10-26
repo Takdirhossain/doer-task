@@ -4,6 +4,7 @@ import { ProfileResponse } from '../../model/profile.model';
 import { CommonModule, DatePipe } from '@angular/common';
 import Swal from 'sweetalert2';
 import { FormsModule } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-profile',
@@ -31,7 +32,7 @@ export class Profile implements OnInit {
     address: ''
   };
 
-  constructor(private profileService: ProfileService) { }
+  constructor(private profileService: ProfileService, private toaster: ToastrService) { }
 
   ngOnInit(): void {
     const user = JSON.parse(localStorage.getItem("user") || '{}');
@@ -67,22 +68,12 @@ export class Profile implements OnInit {
     
     this.profileService.updateUserProfile(this.userId, this.formData).subscribe({
       next: (res) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Profile updated successfully!',
-          timer: 2000,
-          showConfirmButton: false
-        });
+        this.toaster.success('Profile updated successfully!');
         this.editMode = false;
         this.getUserProfile(); 
       },
       error: (err) => {
-        console.error(err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Failed to update profile',
-          text: err?.error?.message || 'Please try again later.'
-        });
+       this.toaster.error('Error updating profile', err?.error?.message || 'Please try again later.');
       }
     });
   }

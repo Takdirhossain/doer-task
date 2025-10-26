@@ -1,15 +1,13 @@
 const { prisma } = require("../../config/database");
 const AppError = require("../../utils/AppError");
 const { createLogger } = require("../logManager/log.service");
-const { studentSchema } = require("./student.validation");
+const { stringify } = require('csv-stringify/sync');
 const bcrypt = require("bcryptjs");
 
-
-
 exports.filterExistingUsers = async (uniqueUsers, duplicateUsers) => {
-  const usernames = uniqueUsers.map(u => u.username);
-  const emails = uniqueUsers.map(u => u.email);
-  const mobiles = uniqueUsers.map(u => u.mobileNumber);
+  const usernames = uniqueUsers.map((u) => u.username);
+  const emails = uniqueUsers.map((u) => u.email);
+  const mobiles = uniqueUsers.map((u) => u.mobileNumber);
 
   const existingUsers = await prisma.user.findMany({
     where: {
@@ -22,36 +20,42 @@ exports.filterExistingUsers = async (uniqueUsers, duplicateUsers) => {
   });
 
   const userMap = new Map();
-  existingUsers.forEach(u => {
+  existingUsers.forEach((u) => {
     userMap.set(u.username, u);
     userMap.set(u.email, u);
     userMap.set(u.mobileNumber, u);
   });
 
   const finalUniqueUsers = [];
-  const finalDuplicateUsers = [...duplicateUsers]; 
+  const finalDuplicateUsers = [...duplicateUsers];
 
   for (const user of uniqueUsers) {
-    const conflict = userMap.get(user.username) || userMap.get(user.email) || userMap.get(user.mobileNumber);
+    const conflict =
+      userMap.get(user.username) ||
+      userMap.get(user.email) ||
+      userMap.get(user.mobileNumber);
     const conflictInStudentTable = await prisma.student.findFirst({
       where: {
-        userId: user?.class,
-        rollNumber: user?.rollNumber,
+        class: user.class,
+        rollNumber: user.rollNumber,
       },
     });
-    if (conflict ) {
+    if (conflict) {
       finalDuplicateUsers.push({
-        reason: 'Already exists in database',
-        conflictField: conflict.username === user.username ? 'username'
-          : conflict.email === user.email ? 'email' : 'mobileNumber',
+        reason: "Already exists in database",
+        conflictField:
+          conflict.username === user.username
+            ? "username"
+            : conflict.email === user.email
+              ? "email"
+              : "mobileNumber",
         existingId: conflict.id,
         ...user,
       });
-    } 
-    else if (conflictInStudentTable) {
+    } else if (conflictInStudentTable) {
       finalDuplicateUsers.push({
-        reason: 'Already exists in database',
-        conflictField: 'class and roll number',
+        reason: "Already exists in database",
+        conflictField: "class and roll number",
         existingId: conflictInStudentTable.id,
         ...user,
       });
@@ -63,84 +67,69 @@ exports.filterExistingUsers = async (uniqueUsers, duplicateUsers) => {
   return { finalUniqueUsers, finalDuplicateUsers };
 };
 
-// Insert unique users in chunks
-// exports.insertUsers = async (users) => {
-//   const chunkSize = 1000; // adjust as needed
-//   const results = [];
+exports.insertUsers = async (users,teacherId) => {
+  const chunkSize = 1000;
+  const results = [];
 
-//   for (let i = 0; i < users.length; i += chunkSize) {
-//     const chunk = users.slice(i, i + chunkSize);
+  const role = await prisma.role.findFirst({
+    where: { name: 'STUDENT' },
+  });
+  if (!role) throw new Error('Role STUDENT not found');
 
-//     // Hash passwords for chunk
-//     const hashedChunk = await Promise.all(
-//       chunk.map(async u => ({
-//         ...u,
-//         passwordHash: await bcrypt.hash(u.password_hash, 10),
-//       }))
-//     );
+  for (let i = 0; i < users.length; i += chunkSize) {
+    const chunk = users.slice(i, i + chunkSize);
 
-//     const inserted = await prisma.user.createMany({
-//       data: hashedChunk.map(u => ({
-//         username: u.username,
-//         email: u.email,
-//         mobileNumber: u.mobileNumber,
-//         passwordHash: u.passwordHash,
-//         role: 'STUDENT',
-//       })),
-//       skipDuplicates: true,
-//     });
+    const hashedChunk = await Promise.all(
+      chunk.map(async (u) => ({
+        ...u,
+        passwordHash: await bcrypt.hash(u.password_hash || '123456', 10),
+      }))
+    );
 
-//     results.push(inserted);
-//   }
-
-//   return results;
-// };
-exports.create = async (req) => {
-  const teacherId = req.user.id;
-  if (uniqueUsers.length == 0) throw new Error("No unique users found");
-
-  const usersData = uniqueUsers.map((u) => ({
-    username: u.username,
-    email: u.email,
-    mobileNumber: u.mobileNumber,
-    role: "STUDENT",
-    passwordHash: bcrypt.hashSync(u.password_hash, 10),
-  }));
-
-  await prisma.$transaction(async (prismaTx) => {
-    const createdUsers = await prismaTx.user.createMany({
-      data: usersData,
+    await prisma.user.createMany({
+      data: hashedChunk.map((u) => ({
+        username: u.username,
+        email: u.email,
+        mobileNumber: u.mobileNumber,
+        passwordHash: u.passwordHash,
+        roleId: role.id, 
+      })),
       skipDuplicates: true,
     });
 
-    const insertedUsers = await prismaTx.user.findMany({
-      where: {
-        email: { in: uniqueUsers.map((u) => u.email) },
-      },
+    const emails = hashedChunk.map((u) => u.email);
+    const insertedUsers = await prisma.user.findMany({
+      where: { email: { in: emails } },
     });
 
-    const studentsData = uniqueUsers.map((u) => {
-      const user = insertedUsers.find((user) => user.email === u.email);
+    const studentsData = insertedUsers.map((u) => {
+      const userInfo = hashedChunk.find((usr) => usr.email === u.email);
       return {
-        userId: user.id,
-        firstName: u.firstName,
-        lastName: u.lastName,
-        class: u.className,
-        dateOfBirth: u.dateOfBirth,
-        rollNumber: u.rollNumber,
-        address: u.address,
-        teacherId: teacherId,
+        userId: u.id,
+        rollNumber: userInfo.rollNumber,
+        class: userInfo.class,
+        firstName: userInfo.firstName,
+        lastName: userInfo.lastName,
+        dateOfBirth: userInfo.dateOfBirth,
+        teacherId:teacherId,
+        address:userInfo.address,        
       };
     });
 
-    await prismaTx.student.createMany({
+    const insertedStudents = await prisma.student.createMany({
       data: studentsData,
       skipDuplicates: true,
     });
-  });
 
-  return uniqueUsers;
+    results.push({
+      usersInserted: insertedUsers.length,
+      studentsInserted: insertedStudents.count,
+    });
+  }
+
+  return results;
 };
+
 exports.createStudent = async (data, teacherId, username) => {
   const result = await prisma.$transaction(async (prismaTx) => {
     const user = await prismaTx.user.create({
@@ -172,11 +161,11 @@ exports.createStudent = async (data, teacherId, username) => {
   createLogger({
     userId: teacherId,
     userName: username,
-    level: 'INFO',
-    category: 'STUDENT',
-    action: 'CREATE',
-    message: 'Student created successfully',
-    meta: { body: data }
+    level: "INFO",
+    category: "STUDENT",
+    action: "CREATE",
+    message: "Student created successfully",
+    meta: { body: data },
   }).catch((logErr) => {
     console.error("Logging failed:", logErr);
   });
@@ -198,8 +187,7 @@ exports.list = async ({ page = 1, limit = 10, search = "", teacherId }) => {
             OR: [
               { user: { username: { contains: search, mode: "insensitive" } } },
               { user: { email: { contains: search, mode: "insensitive" } } },
-              { firstName: { contains: search, mode: "insensitive" } },
-              { lastName: { contains: search, mode: "insensitive" } },
+              { user: { mobileNumber: { contains: search, mode: "insensitive" } } }
             ],
           }
         : {},
@@ -210,7 +198,7 @@ exports.list = async ({ page = 1, limit = 10, search = "", teacherId }) => {
     prisma.student.count({ where }),
     prisma.student.findMany({
       where,
-      include: { user: true }, 
+      include: { user: true },
       skip,
       take: Number(limit),
       orderBy: { id: "desc" },
@@ -274,7 +262,8 @@ exports.remove = async (id, userId, username) => {
     where: { userId: id },
   });
   if (!student) throw new Error("Student not found");
-  if (student.teacherId !== userId) throw new Error("You are not authorized to delete this student");
+  if (student.teacherId !== userId)
+    throw new Error("You are not authorized to delete this student");
 
   await prisma.$transaction([
     prisma.student.delete({ where: { userId: id } }),
@@ -285,54 +274,102 @@ exports.remove = async (id, userId, username) => {
 };
 
 exports.updateStudent = async (data, teacherId, studentId) => {
-    const user = await prisma.user.findUnique({
-      where: { id: studentId },
-    });
-    if (!user) throw new AppError("User not found", 404);
+  const user = await prisma.user.findUnique({
+    where: { id: studentId },
+  });
+  if (!user) throw new AppError("User not found", 404);
 
-    const student = await prisma.student.findUnique({
-      where: { userId: user.id },
-    });
-    if (!student) throw new AppError("Student not found", 404);
-    if (student.teacherId !== teacherId) throw new AppError("You are not authorized to update this student", 401);
+  const student = await prisma.student.findUnique({
+    where: { userId: user.id },
+  });
+  if (!student) throw new AppError("Student not found", 404);
+  if (student.teacherId !== teacherId)
+    throw new AppError("You are not authorized to update this student", 401);
 
-    if (data.class !== undefined && data.rollNumber !== undefined) {
-      const existing = await prisma.student.findFirst({
-        where: {
-          teacherId: teacherId,
-          class: data.class,
-          rollNumber: data.rollNumber,
-          userId: { not: user.id }, 
-        },
-      });
-      if (existing) {
-        throw new AppError(
-          `Roll number ${data.rollNumber} is already assigned in class ${data.class}`,
-          400
-        );
-      }
+  if (data.class !== undefined && data.rollNumber !== undefined) {
+    const existing = await prisma.student.findFirst({
+      where: {
+        teacherId: teacherId,
+        class: data.class,
+        rollNumber: data.rollNumber,
+        userId: { not: user.id },
+      },
+    });
+    if (existing) {
+      throw new AppError(
+        `Roll number ${data.rollNumber} is already assigned in class ${data.class}`,
+        400
+      );
     }
+  }
 
-    const [updatedUser, updatedStudent] = await prisma.$transaction([
-      prisma.user.update({
-        where: { id: user.id },
-        data: {
-          email: data.email ?? user.email,
-          mobileNumber: data.mobileNumber ?? user.mobileNumber,
-          status: data.status ? "ACTIVE" : "INACTIVE",
-        },
-      }),
-      prisma.student.update({
-        where: { userId: user.id },
-        data: {
-          firstName: data.firstName ?? student.firstName,
-          lastName: data.lastName ?? student.lastName,
-          address: data.address ?? student.address,
-          rollNumber: data.rollNumber ?? student.rollNumber,
-          class: data.class ?? student.class,
-        },
-      }),
-    ]);
+  const [updatedUser, updatedStudent] = await prisma.$transaction([
+    prisma.user.update({
+      where: { id: user.id },
+      data: {
+        email: data.email ?? user.email,
+        mobileNumber: data.mobileNumber ?? user.mobileNumber,
+        status: data.status ? "ACTIVE" : "INACTIVE",
+      },
+    }),
+    prisma.student.update({
+      where: { userId: user.id },
+      data: {
+        firstName: data.firstName ?? student.firstName,
+        lastName: data.lastName ?? student.lastName,
+        address: data.address ?? student.address,
+        rollNumber: data.rollNumber ?? student.rollNumber,
+        class: data.class ?? student.class,
+      },
+    }),
+  ]);
 
-    return { user: updatedUser, student: updatedStudent };
+  return { user: updatedUser, student: updatedStudent };
+};
+
+exports.exportStudents = async (teacherId, search = null) => {
+  const where = {
+    AND: [
+      { student: { teacherId } },
+      search
+        ? {
+            OR: [
+              { username: { contains: search, mode: 'insensitive' } },
+              { email: { contains: search, mode: 'insensitive' } },
+              { mobileNumber: { contains: search, mode: 'insensitive' } },
+              { student: { firstName: { contains: search, mode: 'insensitive' } } },
+              { student: { lastName: { contains: search, mode: 'insensitive' } } },
+            ],
+          }
+        : {},
+    ],
+  };
+
+  const users = await prisma.user.findMany({
+    where,
+    include: {
+      student: true,
+    },
+    orderBy: { student: { rollNumber: 'asc' } },
+  });
+
+  const records = users.map((u) => ({
+    Username: u.username,
+    Email: u.email,
+    Mobile: u.mobileNumber,
+    FirstName: u.student?.firstName || '',
+    LastName: u.student?.lastName || '',
+    Class: u.student?.class || '',
+    RollNumber: u.student?.rollNumber || '',
+    DateOfBirth: u.student?.dateOfBirth
+      ? u.student.dateOfBirth.toISOString().split('T')[0]
+      : '',
+    Address: u.student?.address || '',
+  }));
+
+  const csvBuffer = Buffer.from(
+    stringify(records, { header: true, columns: Object.keys(records[0] || {}) })
+  );
+
+  return csvBuffer;
 };

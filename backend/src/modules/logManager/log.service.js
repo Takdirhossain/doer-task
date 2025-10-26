@@ -52,6 +52,31 @@ exports.getLogs = async (req, userId) => {
     throw error;
   }
 };
+exports.getLogger= async(req, page, limit) => {
+  
+    const skip = (page - 1) * limit;
+
+    const [logs, total] = await Promise.all([
+      prisma.log.findMany({
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: limit,
+      }),
+      prisma.log.count({
+      }),
+    ]);
+
+    return {
+      logs,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  
+}
 
 exports.createLogger = async(data) => {
   try {

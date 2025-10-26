@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
+import { DatePipe } from '@angular/common';
 import { StudentAttendenceRoutingModule } from './student-attendence-routing-module';
 
 
@@ -9,6 +9,7 @@ import { StudentAttendenceRoutingModule } from './student-attendence-routing-mod
   imports: [
     CommonModule,
     StudentAttendenceRoutingModule
-  ]
+  ],  
+  providers: [DatePipe]
 })
 export class StudentAttendenceModule { }

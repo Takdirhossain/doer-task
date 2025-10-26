@@ -31,7 +31,7 @@ export class CsvImport {
             class: 'w-16 text-center',
           },
           {
-            key: 'className',
+            key: 'class',
             label: 'Class Name',
           },
           {
@@ -101,53 +101,36 @@ export class CsvImport {
     this.loading = true;
     this.StudentManagementService.uploadCsv(formData).subscribe({
       next: (res: any) => {
+          this.toastr.success('File processed successfully');
         let data = res?.data
         this.uniqueUsers = data?.uniqueUsers || [];
         
         this.duplicateUsers = data?.duplicateUsers || [];
         this.uniqueCount = data?.uniqueCount || 0;
         this.duplicateCount = data?.duplicateCount || 0;
-        Swal.fire({
-          icon: 'success',
-          title: 'Upload success',
-          text: 'File uploaded successfully',
-        });
+      
         this.loading = false;
       },
       error: (err) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Upload error',
-          text: 'File upload failed',
-        });
+        this.toastr.error(err?.error?.message);
         this.loading = false;
       },
     });
   }
   save() {
     if(!this.uniqueCount){
-      Swal.fire({
-        icon: 'error',
-        title: 'No unique users found',
-      });
+      this.toastr.error('No unique users found');
       return;
     }
     this.loadingSave = true;
-    this.StudentManagementService.saveCsv().subscribe({
+    this.StudentManagementService.saveCsv(this.uniqueUsers).subscribe({
       next: (res) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Save success',
-          text: 'File saved successfully',
-        });
+        this.toastr.success('File saved successfully');
         this.loadingSave = false;
       },
       error: (err) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Save error',
-          text: 'File save failed',
-        });
+        console.log(err);
+        this.toastr.error(err?.error?.message);
         this.loadingSave = false;
       },
     });

@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
 export class StudentAttendenceService {
   constructor(private http: HttpClient) { }
   markAttendance() {
-    return this.http.post(`${API_URL}/api/v1/attendance/present`, {});
+    return this.http.get(`${API_URL}/api/v1/attendance/present`, {});
   }
   getAttendenceHistory({page, limit}: {page: number, limit: number}): Observable<AttendanceResponse> {
     return this.http.get<AttendanceResponse>(`${API_URL}/api/v1/attendance/get-present-history`, {params: {page, limit}});

@@ -8,80 +8,93 @@
           alt=""
         />
       </div>
-     <div>
-       <h3 class="text-primary user-name">{{ userData.username }}</h3>
-      <p class="user-role">{{ userData.role }}</p>
-      <a [routerLink]="['/student/profile']" *ngIf="userData.role === 'STUDENT'" class="view-profile">View Profile</a>
-     </div>
+      <div>
+        <h3 class="text-primary user-name">{{ userData.username }}</h3>
+        <p class="user-role">{{ userData.role }}</p>
+        <a
+          [routerLink]="['/student/profile']"
+          *ngIf="userData.role === 'STUDENT'"
+          class="view-profile"
+          >View Profile</a
+        >
+      </div>
     </div>
 
     <div class="flex flex-column sidebar-content gap-5">
-      <a *ngIf="userData.role === 'TEACHER'"
+      <a
+        *ngIf="userData.role === 'TEACHER'"
         [routerLink]="['/teacher/dashboard']"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }"
         class="flex flex-row align-center gap-2"
       >
-        <mat-icon style="font-size: 22px;">home</mat-icon>
+        <mat-icon style="font-size: 22px">home</mat-icon>
         <span>Dashboard</span>
       </a>
-       <a *ngIf="userData.role === 'STUDENT'"
+      <a
+        *ngIf="userData.role === 'STUDENT'"
         [routerLink]="['/student/dashboard']"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }"
         class="flex flex-row align-center gap-2"
       >
-        <mat-icon style="font-size: 22px;">home</mat-icon>
+        <mat-icon style="font-size: 22px">home</mat-icon>
         <span>Dashboard</span>
       </a>
 
-      <a *ngIf="userData.role === 'TEACHER'"
+      <a
+        *ngIf="userData.role === 'TEACHER'"
         [routerLink]="['/teacher/student-management']"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }"
         class="flex flex-row align-center gap-2"
       >
-        <mat-icon style="font-size: 22px;">groups_2</mat-icon>
+        <mat-icon style="font-size: 22px">groups_2</mat-icon>
         <span>Student Management</span>
       </a>
 
-      <a *ngIf="userData.role === 'TEACHER'"
+      <a
+        *ngIf="userData.role === 'TEACHER'"
         [routerLink]="['/teacher/attendence']"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }"
         class="flex flex-row align-center gap-2"
       >
-        <mat-icon style="font-size: 22px;">co_present</mat-icon>
+        <mat-icon style="font-size: 22px">co_present</mat-icon>
         <span>Attendance Management</span>
       </a>
-      <a *ngIf="userData.role === 'STUDENT'"
+      <a
+        *ngIf="userData.role === 'STUDENT'"
         [routerLink]="['/student/attendence']"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }"
         class="flex flex-row align-center gap-2"
       >
-        <mat-icon style="font-size: 22px;">co_present</mat-icon>
+        <mat-icon style="font-size: 22px">co_present</mat-icon>
         <span>Attendance Management</span>
       </a>
 
-      <a *ngIf="userData.role === 'TEACHER'"
+      <a
+        *ngIf="userData.role === 'TEACHER'"
         [routerLink]="['/teacher/login-logs']"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }"
         class="flex flex-row align-center gap-2"
       >
-        <mat-icon style="font-size: 22px;">device_hub</mat-icon>
+        <mat-icon style="font-size: 22px">device_hub</mat-icon>
         <span>Login Logs</span>
       </a>
-            <a *ngIf="userData.role === 'STUDENT'"
+      <a
+        *ngIf="userData.role === 'STUDENT'"
         [routerLink]="['/student/login-logs']"
         routerLinkActive="active"
         [routerLinkActiveOptions]="{ exact: true }"
         class="flex flex-row align-center gap-2"
       >
-        <mat-icon style="font-size: 22px;">device_hub</mat-icon>
+        <mat-icon style="font-size: 22px">device_hub</mat-icon>
         <span>Login Logs</span>
       </a>
+
     </div>
   </div>
 </section>

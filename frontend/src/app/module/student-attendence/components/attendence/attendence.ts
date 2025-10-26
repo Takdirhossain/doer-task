@@ -7,6 +7,7 @@ import { Attendance, AttendanceResponse } from '../../model/attendence-history.m
 import { CommonModule, DatePipe } from '@angular/common';
 import { TableConfig } from '@app/shared/model/common.model';
 import { DataTableComponent } from '@app/shared/components/data-table-component/data-table-component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-attendence',
@@ -24,6 +25,7 @@ export class Attendence implements OnInit {
           key: 'date',
           label: 'Date',
           class: 'w-16 text-center',
+           format: (value) => this.datePipe.transform(value, 'dd/MM/yyyy') || '' 
         },
         {
           key: 'status',
@@ -32,6 +34,7 @@ export class Attendence implements OnInit {
         {
           key: 'markedAt',
           label: 'Marked At',
+          format: (value) => this.datePipe.transform(value, 'dd/MM/yyyy HH:mm') || '' 
         },
         {
           key: 'teacher',
@@ -50,7 +53,7 @@ export class Attendence implements OnInit {
   };
   pageSizeOptions = [5, 10, 25, 50];
 
-  constructor(private studentAttendenceService: StudentAttendenceService) {}
+  constructor(private studentAttendenceService: StudentAttendenceService, private datePipe: DatePipe, private toaster: ToastrService) {}
 
  ngOnInit(): void {
   this.getAttendenceHistory();
@@ -61,22 +64,12 @@ export class Attendence implements OnInit {
 
     this.studentAttendenceService.markAttendance().subscribe({
       next: (res) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'Attendance marked successfully!',
-          timer: 2000,
-          showConfirmButton: false,
-        });
+        this.toaster.success('Attendance marked successfully!');
         this.getAttendenceHistory();
       },
       error: (err) => {
          this.isMarking = false;
-        console.error('Error marking attendance:', err);
-        Swal.fire({
-          icon: 'error',
-          title: 'Failed to mark attendance',
-          text: err?.error?.message || 'Please try again later.',
-        });
+        this.toaster.error('Error marking attendance', err?.error?.message || 'Please try again later.');
       },
       complete: () => {
         this.isMarking = false;

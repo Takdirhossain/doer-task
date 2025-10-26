@@ -15,8 +15,8 @@ export class StudentManagementService {
   uploadCsv(formData: FormData): Observable<StudentResponse> {
     return this.http.post<StudentResponse>(API_URL + '/api/v1/students/process-csv', formData);
   }
-  saveCsv(): Observable<StudentResponse> {
-    return this.http.post<StudentResponse>(API_URL + '/api/v1/students/save-csv', {});
+  saveCsv(uniqueUsers:Student[]): Observable<StudentResponse> {
+    return this.http.post<StudentResponse>(API_URL + '/api/v1/students/save-csv', uniqueUsers);
   }
   getStudents(page: number, limit: number, searchTerm?: string): Observable<StudentListResponse> {
     return this.http.get<StudentListResponse>(API_URL + '/api/v1/students/student-list?page=' + page + '&limit=' + limit + '&search=' + searchTerm);
@@ -33,4 +33,8 @@ export class StudentManagementService {
   getRoles(): Observable<RolesResponse> {
     return this.http.get<RolesResponse>(API_URL + '/api/v1/authorization/get-roles');
   }
+ exportStudents(search: string = '') {
+  const url = `${API_URL}/api/v1/students/export-list?search=${encodeURIComponent(search)}`;
+  return this.http.get(url, { responseType: 'blob' });
+}
 }
