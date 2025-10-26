@@ -4,13 +4,14 @@ const {checkRolePermission} = require("../modules/authorization/authorization.se
 const checkPermission = (permissionName, moduleName) => {
     return async(req, res, next) => {
         const userId = req.user.id;
+        const role = req.user.role;
         const hasPermission = await checkRolePermission({
-            userId,
+            role,
             permissionName,
             moduleName
         })
         if (!hasPermission) {
-            return next(new AppError("You do not have permission to access this resource", 403));
+            return next(new AppError("You do not have permission to access this API resource", 403));
         }
         next();
     }

@@ -1,22 +1,19 @@
 <div class="mb-3 mt-5">
-  <button
-    (click)="markAttendance()"
-    [disabled]="isMarking"
-    class="btn btn-primary"
-  >
+  <h2>Student Attendence</h2>
+  <button (click)="markAttendance()" [disabled]="isMarking" class="btn btn-primary">
     {{ isMarking ? 'Marking...' : 'Mark as Present' }}
   </button>
 </div>
 
-  <app-data-table-component
-    [data]="attendances"
-    [config]="tableConfig"
-    [loading]="loading"
-    [totalRecords]="pagination.total"
-    [pageSize]="pagination.limit"
-    [pageIndex]="pagination.page - 1"
-    [showSearch]="false"
-    [pageSizeOptions]="[10, 20, 30, 40, 50]"
-    (pageChange)="onPageChange($event)"
-    (pageSizeChange)="onPageSizeChange($event)"
-  ></app-data-table-component>
+<app-data-table-component
+  [data]="attendances"
+  [config]="tableConfig"
+  [loading]="loading"
+  [totalRecords]="pagination.total"
+  [pageSize]="pagination.limit"
+  [pageIndex]="pagination.page - 1"
+  [showSearch]="false"
+  [pageSizeOptions]="[10, 20, 30, 40, 50]"
+  (pageChange)="onPageChange($event)"
+  (pageSizeChange)="onPageSizeChange($event)"
+></app-data-table-component>

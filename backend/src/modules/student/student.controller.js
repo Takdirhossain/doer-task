@@ -13,6 +13,7 @@ const AppError = require("../../utils/AppError");
 
 exports.uploadCsv = catchAsync(async (req, res, next) => {
   if (!req.file) return next(new AppError("CSV file required", 400));
+  const { id: teacherId, username } = req.user;
 
   const duplicateUsers = [];
   const uniqueUsers = [];
@@ -54,7 +55,12 @@ exports.uploadCsv = catchAsync(async (req, res, next) => {
   await fs.promises.unlink(req.file.path);
 
   const { finalUniqueUsers, finalDuplicateUsers } =
-    await service.filterExistingUsers(uniqueUsers, duplicateUsers);
+    await service.filterExistingUsers(
+      uniqueUsers,
+      duplicateUsers,
+      teacherId,
+      username
+    );
 
   res.json(
     apiResponse(true, "CSV processed successfully", {
@@ -68,7 +74,8 @@ exports.uploadCsv = catchAsync(async (req, res, next) => {
 
 exports.saveCsv = catchAsync(async (req, res) => {
   const teacherId = req.user.id;
-  const data = await service.insertUsers(req.body, teacherId);
+  const username = req.user.username;
+  const data = await service.insertUsers(req.body, teacherId, username);
   res.json(apiResponse(true, "Student created successfully", data));
 });
 
@@ -97,6 +104,7 @@ exports.getById = catchAsync(async (req, res, next) => {
 });
 
 exports.update = catchAsync(async (req, res, next) => {
+  const { id, username } = req.user;
   const studentId = req.params.id;
   const { error, value } = profileUpdateSchema.validate(req.body);
   if (error) return next(new AppError(error.message, 400));
@@ -116,16 +124,18 @@ exports.updateStudent = catchAsync(async (req, res, next) => {
   if (paramError) return next(new AppError(paramError.details[0].message, 400));
   const studentId = req.params.id;
   const teacherId = req.user.id;
+  const teacherName = req.user.username;
   const { error, value } = studentUpdateSchema.validate(req.body);
   if (error) return next(new AppError(error.message, 400));
-  const updated = await service.updateStudent(value, teacherId, studentId);
+  const updated = await service.updateStudent(value, teacherId, studentId,teacherName);
   res.json(apiResponse(true, "Student updated successfully", updated));
 });
 
 exports.exportStudents = catchAsync(async (req, res) => {
   const teacherId = req.user.id;
+  const teacherName = req.user.username;
   const search = req.query.search;
-  const buffer = await service.exportStudents(teacherId, search);
+  const buffer = await service.exportStudents(teacherId, teacherName, search);
   res.setHeader("Content-Type", "text/csv");
   res.setHeader("Content-Disposition", "attachment; filename=students.csv");
   res.send(buffer);

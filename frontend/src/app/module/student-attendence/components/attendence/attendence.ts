@@ -88,7 +88,8 @@ export class Attendence implements OnInit {
         this.pagination.limit = data.pagination?.limit || limit;
       },
       error: (err) => {
-        console.error('Error getting attendance history:', err);
+        this.loading = false;
+        this.toaster.error('Error getting attendance history', err?.error?.message || 'Please try again later.');
       },
       complete: () => {
         this.loading = false;

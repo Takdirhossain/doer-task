@@ -86,7 +86,7 @@ export class LogLog implements OnInit {
         this.pagination = data.pagination;
         this.loginLogs = data.logs;
       },
-      error: (err) => console.error(err),
+      error: (err) =>this.loading = false,
       complete: () => (this.loading = false),
     });
   }

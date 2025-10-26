@@ -1,7 +1,6 @@
 const { prisma } = require("../../config/database");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const { hideFields } = require("../../utils/responseFilter");
 const { createLog, createLogger } = require("../logManager/log.service");
 const AppError = require("../../utils/AppError");
 
@@ -26,7 +25,7 @@ exports.registerUser = async (data) => {
   });
 
   const token = jwt.sign(
-    { id: user.id, role: role?.id, roleName: role?.name },
+    { id: user.id, role: role?.id, roleName: role?.name, username: user?.username },
     process.env.JWT_SECRET,
     {
       expiresIn: "5d",
@@ -72,7 +71,7 @@ exports.loginUser = async (data) => {
   });
 
   const token = jwt.sign(
-    { id: user.id, role: role?.id, roleName: role?.name },
+    { id: user.id, role: role?.id, roleName: role?.name, username: user?.username },
     process.env.JWT_SECRET,
     { expiresIn: "5d" }
   );
@@ -100,11 +99,26 @@ exports.loginUser = async (data) => {
   return { user: userData, token };
 };
 exports.logoutUser = async (userId) => {
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId,
+    },
+  });
+  if (!user) throw new AppError("User not found", 404);
   createLog({
     userId: userId,
     actionType: "logout",
     status: "success",
     message: "User logged out successfully",
+  });
+  createLogger({
+    userId: userId,
+    userName: user?.username,
+    level: "INFO",
+    category: "logout",
+    action: "logout",
+    message: "User logged out successfully",
+    meta: user,
   });
   return true;
 };

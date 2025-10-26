@@ -8,6 +8,7 @@ import { Pagination } from '@app/module/login-log/model/login-log.model';
 import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { TableConfig } from '@app/shared/model/common.model';
 import { DataTableComponent } from '@app/shared/components/data-table-component/data-table-component';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-attendence',
@@ -17,7 +18,6 @@ import { DataTableComponent } from '@app/shared/components/data-table-component/
   styleUrl: './attendence.css'
 })
 export class Attendence implements OnInit {
-  displayedColumns: string[] = ['studentId', 'name', 'username', 'status'];
   tableConfig: TableConfig = {
       columns: [
         {
@@ -43,9 +43,7 @@ export class Attendence implements OnInit {
     };
   data: StudentAttendance[] = [];
   activePage: 'present' | 'absent' = 'present';
-  
-  @ViewChild('presentPaginator') presentPaginator!: MatPaginator;
-  @ViewChild('absentPaginator') absentPaginator!: MatPaginator;
+
   
   loading = false;
   
@@ -56,7 +54,7 @@ export class Attendence implements OnInit {
     totalPages: 0,
   };
 
-  constructor(private attendanceService: TeacherAttendenceService) {}
+  constructor(private attendanceService: TeacherAttendenceService, private toaster: ToastrService) {}
 
   ngOnInit(): void {
     this.getAttendance('present', this.pagination.page, this.pagination.limit);
@@ -76,7 +74,13 @@ export class Attendence implements OnInit {
         this.loading = false;
       },
      
-      error: () => (this.loading = false)
+      error: (err) => {
+        this.loading = false;
+        this.toaster.error('Error getting attendance history', err?.error?.message || 'Please try again later.');
+      },
+      complete: () => {
+        this.loading = false;
+      }
     });
   }
 

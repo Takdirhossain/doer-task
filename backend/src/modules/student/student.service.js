@@ -4,7 +4,7 @@ const { createLogger } = require("../logManager/log.service");
 const { stringify } = require('csv-stringify/sync');
 const bcrypt = require("bcryptjs");
 
-exports.filterExistingUsers = async (uniqueUsers, duplicateUsers) => {
+exports.filterExistingUsers = async (uniqueUsers, duplicateUsers,teacherId,username) => {
   const usernames = uniqueUsers.map((u) => u.username);
   const emails = uniqueUsers.map((u) => u.email);
   const mobiles = uniqueUsers.map((u) => u.mobileNumber);
@@ -63,11 +63,22 @@ exports.filterExistingUsers = async (uniqueUsers, duplicateUsers) => {
       finalUniqueUsers.push(user);
     }
   }
+  createLogger({
+    userId: teacherId,
+    userName: username,
+    level: "INFO",
+    category: "STUDENT CSV IMPORT",
+    action: "CSV IMPORT",
+    message: "Student csv import successfully",
+    meta: { },
+  }).catch((logErr) => {
+    console.error("Logging failed:", logErr);
+  });
 
   return { finalUniqueUsers, finalDuplicateUsers };
 };
 
-exports.insertUsers = async (users,teacherId) => {
+exports.insertUsers = async (users,teacherId,username) => {
   const chunkSize = 1000;
   const results = [];
 
@@ -127,6 +138,15 @@ exports.insertUsers = async (users,teacherId) => {
     });
   }
 
+  createLogger({
+    userId: teacherId,
+    userName: username,
+    level: "INFO",
+    category: "STUDENT CREATION",
+    action: "CSV IMPORT",
+    message: "Student created successfully",
+    meta: { },
+  })
   return results;
 };
 
@@ -165,10 +185,8 @@ exports.createStudent = async (data, teacherId, username) => {
     category: "STUDENT",
     action: "CREATE",
     message: "Student created successfully",
-    meta: { body: data },
-  }).catch((logErr) => {
-    console.error("Logging failed:", logErr);
-  });
+    meta: data,
+  })
 
   const { user, student } = result;
   const { passwordHash, ...safeUser } = user;
@@ -270,10 +288,20 @@ exports.remove = async (id, userId, username) => {
     prisma.user.delete({ where: { id } }),
   ]);
 
+  createLogger({
+    userId: userId,
+    userName: username,
+    level: "INFO",
+    category: "STUDENT",
+    action: "DELETE",
+    message: "Student deleted successfully",
+    meta: user,
+  })
+
   return true;
 };
 
-exports.updateStudent = async (data, teacherId, studentId) => {
+exports.updateStudent = async (data, teacherId, studentId,teacherName) => {
   const user = await prisma.user.findUnique({
     where: { id: studentId },
   });
@@ -324,10 +352,20 @@ exports.updateStudent = async (data, teacherId, studentId) => {
     }),
   ]);
 
+  createLogger({
+    userId: teacherId,
+    userName: teacherName,
+    level: "INFO",
+    category: "STUDENT",
+    action: "UPDATE",
+    message: "Student updated successfully",
+    meta: { body: data },
+  })
+
   return { user: updatedUser, student: updatedStudent };
 };
 
-exports.exportStudents = async (teacherId, search = null) => {
+exports.exportStudents = async (teacherId,teacherName, search = null) => {
   const where = {
     AND: [
       { student: { teacherId } },
@@ -370,6 +408,16 @@ exports.exportStudents = async (teacherId, search = null) => {
   const csvBuffer = Buffer.from(
     stringify(records, { header: true, columns: Object.keys(records[0] || {}) })
   );
+
+  createLogger({
+    userId: teacherId,
+    userName: teacherName,
+    level: "INFO",
+    category: "STUDENT",
+    action: "EXPORT",
+    message: "Students exported successfully",
+    meta: { search },
+  })
 
   return csvBuffer;
 };

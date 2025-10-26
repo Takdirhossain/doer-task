@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DashboardService } from '../../service/dashboard-service';
 import { AttendanceDataWrapper } from '../../model/dashboard.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-dashboard',
@@ -10,7 +11,7 @@ import { AttendanceDataWrapper } from '../../model/dashboard.model';
 })
 export class Dashboard implements OnInit {
   dashboard: AttendanceDataWrapper = {} as AttendanceDataWrapper;
-  constructor(private dashboardService: DashboardService) {}
+  constructor(private dashboardService: DashboardService, private toastService: ToastrService) {}
 
   ngOnInit(): void {
     this.getDashboardData();
@@ -22,7 +23,7 @@ export class Dashboard implements OnInit {
         this.dashboard = res.data;
       },
       error: (err) => {
-        console.error('Error fetching dashboard data:', err);
+        this.toastService.error(err.error.message);
       },
     });
   }

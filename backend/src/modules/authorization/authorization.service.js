@@ -141,16 +141,15 @@ exports.deleteRolePermission = async (id) => {
 };
 
 exports.checkRolePermission = async (value) => {
-  console.log(value);
   const rolePermission = await prisma.rolePermission.findFirst({
-    where:{
-        roleId: value.userId,
-        permissionId: {
-            name: value.permissionName,
-            module: value.moduleName
-        }
+    where: {
+      roleId: value.role,
+      permission: {
+        name: value.permissionName,
+        module: value.moduleName
+      }
     }
-  })
+  });
 
   return !!rolePermission;
 };
