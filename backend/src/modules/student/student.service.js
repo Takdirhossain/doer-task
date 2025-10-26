@@ -157,7 +157,7 @@ exports.createStudent = async (data, teacherId, username) => {
         username: data.username,
         email: data.email,
         mobileNumber: data.mobileNumber,
-        role: "STUDENT",
+        roleId: data?.role,
         passwordHash: await bcrypt.hash(data.password_hash, 10),
       },
     });

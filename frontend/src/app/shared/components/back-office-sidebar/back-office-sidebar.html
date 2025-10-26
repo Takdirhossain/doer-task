@@ -94,6 +94,16 @@
         <mat-icon style="font-size: 22px">device_hub</mat-icon>
         <span>Login Logs</span>
       </a>
+            <a
+        *ngIf="userData.role === 'TEACHER'"
+        [routerLink]="['/teacher/logger']"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="flex flex-row align-center gap-2"
+      >
+        <mat-icon style="font-size: 22px">account_tree</mat-icon>
+        <span>Logs</span>
+      </a>
 
     </div>
   </div>

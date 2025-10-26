@@ -102,6 +102,11 @@ exports.studentSchema = Joi.object({
       'string.empty': 'Address is required',
       'any.required': 'Address is required',
     }),
+    role: Joi.string().required().messages({
+      'string.base': 'Role must be a string',
+      'string.empty': 'Role is required',
+      'any.required': 'Role is required',
+    }),
 });
 
 exports.profileUpdateSchema = Joi.object({

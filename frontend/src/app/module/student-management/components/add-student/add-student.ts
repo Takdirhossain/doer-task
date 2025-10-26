@@ -24,6 +24,7 @@ import { SignUpValidationPatterns } from '@app/shared/validation/validation';
 import { MatIcon } from '@angular/material/icon';
 import Swal from 'sweetalert2';
 import { Role, RolesResponse } from '@app/shared/model/roles.model';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-add-student',
@@ -48,10 +49,12 @@ export class AddStudent implements OnInit {
   loading = false;
   error?: string;
   roles: Role[] = [];
+  studentRole: any;
   constructor(
     private dialogRef: MatDialogRef<AddStudent>,
     private formBuilder: FormBuilder,
-    private addStudentService: StudentManagementService
+    private addStudentService: StudentManagementService,
+    private toastr: ToastrService
   ) {}
   ngOnInit() {
     this.getRoles();
@@ -114,30 +117,23 @@ export class AddStudent implements OnInit {
   }
 
   save() {
-    console.log('first');
+   
     markFormAsTouched(this.addStudentForm);
+      
     if (this.addStudentForm.valid) {
-      console.log('second');
-      this.addStudentService.addStudent(this.addStudentForm.value).subscribe({
+      let payload = this.addStudentForm.value;
+      payload.role = this.studentRole.id;
+      console.log(payload)
+      this.addStudentService.addStudent(payload).subscribe({
         next: (response: any) => {
           if (response.success) {
-            Swal.fire({
-              icon: 'success',
-              title: 'Student added successfully',
-              showConfirmButton: false,
-              timer: 1500,
-            });
+           this.toastr.success('Student added successfully', 'Success');
             this.dialogRef.close({ success: true, data: this.addStudentForm.value });
           }
         },
         error: (error) => {
           console.error('Error adding student:', error?.error?.message);
-          Swal.fire({
-            icon: 'error',
-            title: error?.error?.message,
-            showConfirmButton: false,
-            timer: 1500,
-          });
+          this.toastr.error(error?.error?.message, 'Error');
           this.error = error?.error?.message;
         },
       });
@@ -146,8 +142,8 @@ export class AddStudent implements OnInit {
   getRoles() {
     this.addStudentService.getRoles().subscribe({
       next: (response: RolesResponse) => {
-        console.log(response);
         this.roles = response.data;
+        this.studentRole = this.roles.find((role) => role.name === 'STUDENT');
       },
       error: (error) => {
         console.error('Error getting roles:', error?.error?.message);

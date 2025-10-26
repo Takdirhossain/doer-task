@@ -10,8 +10,8 @@ exports.getLogs = catchAsync(async (req, res) => {
    
 });
 exports.getLogger =catchAsync(async (req, res) => {
-    let page = req.query.page || 1;
-    let limit = req.query.limit || 10;
-    const logs = await logService.getLogger(req, page, limit);
+    let page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 10;
+    const logs = await logService.getLogger(page, limit);
     res.json(apiResponse(true, 'Logs fetched successfully', logs));
 });

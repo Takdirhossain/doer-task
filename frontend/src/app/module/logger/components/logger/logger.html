@@ -1,0 +1,15 @@
+<div class="mt-5">
+  <h2> Logs Management</h2>
+  <app-data-table-component
+    [data]="logs"
+    [config]="tableConfig"
+    [loading]="loading"
+    [totalRecords]="pagination.total"
+    [pageSize]="pagination.limit"
+    [pageIndex]="pagination.page - 1"
+    [showSearch]="false"
+    [pageSizeOptions]="[10, 20, 30, 40, 50]"
+    (pageChange)="onPageChange($event)"
+    (pageSizeChange)="onPageSizeChange($event)"
+  ></app-data-table-component>
+</div>

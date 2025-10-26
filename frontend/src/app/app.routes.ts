@@ -46,6 +46,12 @@ export const routes: Routes = [
         canActivate: [RoleGuard], 
         data: { requiredRole: ['TEACHER'] },
       },
+      {
+        path: 'logger',
+        loadChildren: () => import('./module/logger/logger-module').then(m => m.LoggerModule),
+        canActivate: [RoleGuard], 
+        data: { requiredRole: ['TEACHER'] },
+      },
     ]
   },{
     path: 'student',

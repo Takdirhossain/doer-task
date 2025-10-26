@@ -4,7 +4,8 @@ const catchAsync = require("../../utils/catchAsync");
 
 exports.present = catchAsync(async (req, res) => {
   let studentId = req.user.id;
-  const user = await attendanceService.present(studentId);
+  const userName = req.user.username;
+  const user = await attendanceService.present(studentId, userName);
   res.json(apiResponse(true, "User registered successfully", user));
 });
 

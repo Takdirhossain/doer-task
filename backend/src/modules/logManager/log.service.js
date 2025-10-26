@@ -52,7 +52,7 @@ exports.getLogs = async (req, userId) => {
     throw error;
   }
 };
-exports.getLogger= async(req, page, limit) => {
+exports.getLogger= async(page = 1, limit = 10) => {
   
     const skip = (page - 1) * limit;
 

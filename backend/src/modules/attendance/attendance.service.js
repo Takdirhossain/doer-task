@@ -10,7 +10,7 @@ const {
 } = require("date-fns");
 const { createLogger } = require("../logManager/log.service");
 
-exports.present = async (studentId) => {
+exports.present = async (studentId, userName) => {
   const { start, end } = getTodayRange();
 
   const student = await prisma.student.findUnique({
@@ -49,7 +49,7 @@ exports.present = async (studentId) => {
 
   createLogger({
     userId: studentId,
-    userName: student.user.username,
+    userName: userName,
     level: "INFO",
     category: "ATTENDANCE",
     action: "MARK",

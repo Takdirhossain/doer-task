@@ -21,6 +21,7 @@ import { DataTableComponent } from '@app/shared/components/data-table-component/
   ],
   templateUrl: './log-log.html',
   styleUrls: ['./log-log.css'],
+  providers: [DatePipe],
 })
 export class LogLog implements OnInit {
   tableConfig: TableConfig = {
@@ -57,6 +58,7 @@ export class LogLog implements OnInit {
         key: 'actionTime',
         label: 'Action Time',
         class: 'max-w-xs truncate',
+        format: (value, row) => this.datePipe.transform(row.actionTime, 'dd/MM/yyyy h:mm:ss a') || '',
       },
     ],
     showActions: false,
@@ -72,7 +74,7 @@ export class LogLog implements OnInit {
   loading = false;
   pageSizeOptions = [10, 20, 30, 40, 50];
 
-  constructor(private loginLogService: LoginLogService) {}
+  constructor(private loginLogService: LoginLogService, private datePipe: DatePipe) {}
 
   ngOnInit(): void {
     this.getLogs();

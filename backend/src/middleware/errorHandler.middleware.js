@@ -1,15 +1,6 @@
 const { createLogger } = require('../modules/logManager/log.service');
 const AppError = require('../utils/AppError');
 
-const handleCastErrorDB = err =>
-  new AppError(`Invalid value for "${err.path}": ${err.value}`, 400);
-
-const handleDuplicateFieldsDB = err => {
-  const field = Object.keys(err.keyValue || {})[0];
-  const value = err.keyValue ? err.keyValue[field] : '';
-  return new AppError(`Duplicate value for "${field}": "${value}". Please use another value.`, 400);
-};
-
 const handlePrismaError = err => {
   switch (err.code) {
     case 'P2002': 
