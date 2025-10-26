@@ -37,6 +37,7 @@ exports.uploadCsv = catchAsync(async (req, res, next) => {
       rollNumber: record.roll_number ? Number(record.roll_number) : null,
       password_hash: record.password_hash?.trim() || "123456",
       address: record.address?.trim() || null,
+      role: "STUDENT",
     };
 
     const { error } = studentSchema.validate(data);

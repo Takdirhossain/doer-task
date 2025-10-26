@@ -111,14 +111,6 @@ exports.logoutUser = async (userId) => {
     status: "success",
     message: "User logged out successfully",
   });
-  createLogger({
-    userId: userId,
-    userName: user?.username,
-    level: "INFO",
-    category: "logout",
-    action: "logout",
-    message: "User logged out successfully",
-    meta: user,
-  });
+
   return true;
 };

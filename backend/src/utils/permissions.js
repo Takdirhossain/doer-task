@@ -1,5 +1,6 @@
  //PERMISSION
 module.exports = {
+    //STUDENT MODULE
     STUDENT: {
         PROCESS_CSV: "PROCESS_CSV",
         SAVE_CSV: "SAVE_CSV",
@@ -11,10 +12,12 @@ module.exports = {
         DELETE: "DELETE",
         EXPORT_LIST: "EXPORT_LIST",
     },
+    //LOG MODULE
     LOG: {
         GET_LOGIN_LOG: "GET_LOGIN_LOG",
         GET_SYSTEM_LOG: "GET_SYSTEM_LOG",
     },
+    //ATTENDANCE MODULE
     ATTENDANCE: {
         PRESENT: "PRESENT",
         GET_TODAY_ATTENDANCE: "GET_TODAY_ATTENDANCE",
